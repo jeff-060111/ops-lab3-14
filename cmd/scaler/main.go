@@ -709,7 +709,20 @@ func (s *scaler) cleanupLeftovers() {
 	for _, line := range strings.Split(string(out), "\n") {
 		if f := strings.Fields(line); len(f) > 0 {
 			log.Printf("停掉上次留下的 %s", f[0])
-			exec.Command("systemctl", "stop", f[0]).Run()
+			if err := exec.Command("systemctl", "stop", f[0]).Run(); err == nil {
+				port, ok := strings.CutPrefix(f[0], "lab3-inst-")
+				if ok {
+					port, ok = strings.CutSuffix(port, ".service")
+				}
+				if ok {
+					if _, err := strconv.Atoi(port); err == nil {
+						// 上次的版本未知；结束事件只需地址即可闭合对应的生命周期。
+						s.logInst(&instance{addr: "127.0.0.1:" + port}, "stopped", "启动时清理遗留实例")
+					}
+				}
+			} else {
+				log.Printf("停掉 %s 失败：%v", f[0], err)
+			}
 			exec.Command("systemctl", "reset-failed", f[0]).Run()
 		}
 	}
