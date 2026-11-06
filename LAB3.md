@@ -8,15 +8,15 @@
 
 | 项 | 内容 |
 |---|---|
-| 小组 | 第 <组号> 组 |
-| 仓库地址 | <https://github.com/…> |
-| 主机 | <云厂商与规格名，例如某云的 2 vCPU 4 GB 通用型> |
-| CPU | <`lscpu` 的 Model name；vCPU 数> |
-| 内存与 swap | <`free -m` 的 total；`swapon --show` 的输出，没有 swap 就写“无”> |
-| 操作系统、内核、systemd | <`/etc/os-release` 的 PRETTY_NAME；`uname -r`；`systemctl --version` 第一行> |
-| cgroup | <`stat -fc %T /sys/fs/cgroup` 的输出；`cat /sys/fs/cgroup/cgroup.controllers` 的输出> |
-| Go、Prometheus、node_exporter | <`go version`；`tools/prometheus --version` 第一行；`tools/node_exporter --version` 第一行> |
-| 分核 | 实例：<如 1>；loadgen、lbd、scaler、Prometheus、node_exporter：<如 0> |
+| 小组 | 第 14 组 |
+| 仓库地址 | <https://github.com/jeff-060111/ops-lab3-14> |
+| 主机 | 华为云 ECS · 4 vCPU / 8 GiB（KVM，规格名按控制台） |
+| CPU | General Purpose Processor（QEMU 虚拟化）；4 个逻辑 CPU = 2 物理核 × 2 超线程 |
+| 内存与 swap | 7556 MB；无 swap |
+| 操作系统、内核、systemd | Ubuntu 24.04.4 LTS；6.8.0-136-generic；systemd 255 (255.4-1ubuntu8.16) |
+| cgroup | cgroup2fs；cpuset cpu io memory hugetlb pids rdma misc |
+| Go、Prometheus、node_exporter | go1.26.9 linux/amd64；prometheus, version 3.13.4 (branch: HEAD, revision: 007a9e9b…)；node_exporter, version 1.12.1 (branch: HEAD, revision: 6044da78…) |
+| 分核 | 实例：2；loadgen、lbd、scaler、Prometheus、node_exporter：0-1（CPU 3 留空，避免与实例争同一物理核） |
 
 ## 2. 任务 A：配额，节流与 OOM
 
