@@ -126,9 +126,10 @@ func summarize(w io.Writer, dir string, slo float64) error {
 
 func writeInstances(w io.Writer, inst []event, t0, t1 int64, rel func(int64) float64) {
 	type life struct {
-		who, v                       string
-		created, started, ready, end int64
-		restarts                     int
+		who, v                                  string
+		created, nodeReady, started, ready, end int64
+		nodeWaiting                             bool
+		restarts                                int
 	}
 	var lives []*life
 	open := map[string]*life{}
@@ -138,6 +139,14 @@ func writeInstances(w io.Writer, inst []event, t0, t1 int64, rel func(int64) flo
 			l := &life{who: e.who, v: e.v, created: e.ms}
 			lives = append(lives, l)
 			open[e.who] = l
+		case "node-wait":
+			if l := open[e.who]; l != nil {
+				l.nodeWaiting = true
+			}
+		case "node-ready":
+			if l := open[e.who]; l != nil {
+				l.nodeReady = e.ms
+			}
 		case "started":
 			if l := open[e.who]; l != nil && l.started == 0 {
 				l.started = e.ms
@@ -178,9 +187,20 @@ func writeInstances(w io.Writer, inst []event, t0, t1 int64, rel func(int64) flo
 		}
 	}
 	fmt.Fprintf(w, "## 实例\n\n实例·分钟（从创建算起，只计负载期间）：%.1f；同时存在的实例最多 %d 个。\n\n", minutes, peak)
-	fmt.Fprintln(w, "| 实例 | 版本 | 创建 | 启动 | 就绪 | 结束 | 拉镜像 s | 启动到就绪 s | 创建到就绪 s | 重启 |\n|---|---|---|---|---|---|---|---|---|---|")
+	shown := func(l *life) bool {
+		return !(l.end != 0 && l.end < t0-60000 || l.created > t1)
+	}
+	withNodeWait := false
 	for _, l := range lives {
-		if l.end != 0 && l.end < t0-60000 || l.created > t1 {
+		withNodeWait = withNodeWait || (shown(l) && l.nodeWaiting)
+	}
+	if withNodeWait {
+		fmt.Fprintln(w, "| 实例 | 版本 | 创建 | 节点可用 | 启动 | 就绪 | 结束 | 等节点 s | 拉镜像 s | 启动到就绪 s | 创建到就绪 s | 重启 |\n|---|---|---|---|---|---|---|---|---|---|---|---|")
+	} else {
+		fmt.Fprintln(w, "| 实例 | 版本 | 创建 | 启动 | 就绪 | 结束 | 拉镜像 s | 启动到就绪 s | 创建到就绪 s | 重启 |\n|---|---|---|---|---|---|---|---|---|---|")
+	}
+	for _, l := range lives {
+		if !shown(l) {
 			continue
 		}
 		at := func(ms int64) string {
@@ -195,8 +215,18 @@ func writeInstances(w io.Writer, inst []event, t0, t1 int64, rel func(int64) flo
 			}
 			return strconv.FormatFloat(float64(b-a)/1000, 'f', 1, 64)
 		}
-		fmt.Fprintf(w, "| %s | %s | %s | %s | %s | %s | %s | %s | %s | %d |\n", l.who, l.v, at(l.created), at(l.started), at(l.ready), at(l.end),
-			span(l.created, l.started), span(l.started, l.ready), span(l.created, l.ready), l.restarts)
+		if withNodeWait {
+			pullStart, nodeWait := l.created, "0.0"
+			if l.nodeWaiting {
+				pullStart, nodeWait = l.nodeReady, span(l.created, l.nodeReady)
+			}
+			fmt.Fprintf(w, "| %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %d |\n", l.who, l.v,
+				at(l.created), at(l.nodeReady), at(l.started), at(l.ready), at(l.end), nodeWait,
+				span(pullStart, l.started), span(l.started, l.ready), span(l.created, l.ready), l.restarts)
+		} else {
+			fmt.Fprintf(w, "| %s | %s | %s | %s | %s | %s | %s | %s | %s | %d |\n", l.who, l.v, at(l.created), at(l.started), at(l.ready), at(l.end),
+				span(l.created, l.started), span(l.started, l.ready), span(l.created, l.ready), l.restarts)
+		}
 	}
 	fmt.Fprintln(w)
 }
