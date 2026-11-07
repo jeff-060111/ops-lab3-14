@@ -3,6 +3,9 @@ package main
 import (
 	"encoding/json"
 	"math"
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -85,5 +88,55 @@ func TestParseUnitShowAndProm(t *testing.T) {
 	}
 	if _, err := parsePromValue("vector", json.RawMessage(`[]`)); err == nil {
 		t.Error("没有序列应当报错")
+	}
+}
+
+func TestOptionalNodeWait(t *testing.T) {
+	newTestScaler := func(wait bool) *scaler {
+		t.Helper()
+		dir := t.TempDir()
+		log, err := openCSV(filepath.Join(dir, "instances.csv"), []string{"unix_ms", "time", "t_run", "instance", "version", "event", "detail"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() { log.f.Close() })
+		return &scaler{opt: options{WaitNode: wait, NodeSlots: 2, nodeDelay: 240 * time.Second, pull: 20 * time.Second,
+			BasePort: 8101, Data: dir}, instLog: log, nodes: make(map[int]time.Time)}
+	}
+
+	plain := newTestScaler(false)
+	for i := 0; i < 4; i++ {
+		if got := plain.create("v1", false, "测试"); got.state != stPulling {
+			t.Fatalf("默认关闭等节点时，第 %d 台应直接拉镜像，得到 %s", i+1, got.state)
+		}
+	}
+
+	waiting := newTestScaler(true)
+	for i := 0; i < 2; i++ {
+		if got := waiting.create("v1", false, "测试"); got.state != stPulling {
+			t.Fatalf("初始空位内第 %d 台应直接拉镜像，得到 %s", i+1, got.state)
+		}
+	}
+	third := waiting.create("v1", false, "扩容")
+	fourth := waiting.create("v1", false, "扩容")
+	if third.state != stWaitingNode || fourth.state != stWaitingNode || !third.nodeUntil.Equal(fourth.nodeUntil) {
+		t.Fatalf("新增两台应共享一次节点等待：第三台 %+v，第四台 %+v", third, fourth)
+	}
+	if d := third.nodeUntil.Sub(third.created); d < 239*time.Second || d > 241*time.Second {
+		t.Errorf("节点等待应约为 240 秒，得到 %v", d)
+	}
+	waiting.writeTargets()
+	b, err := os.ReadFile(filepath.Join(waiting.opt.Data, "targets.json"))
+	if err != nil || strings.Contains(string(b), third.addr) || strings.Contains(string(b), fourth.addr) {
+		t.Errorf("等待节点时不应注册为 Prometheus 目标：%s，错误 %v", b, err)
+	}
+	now := third.nodeUntil.Add(time.Second)
+	waiting.finishNodeWait(third, now)
+	if third.state != stPulling || third.pullUntil.Sub(now) != 20*time.Second {
+		t.Errorf("节点就绪后应另计 20 秒拉镜像，得到状态 %s、结束时刻 %v", third.state, third.pullUntil)
+	}
+	b, err = os.ReadFile(filepath.Join(waiting.opt.Data, "instances.csv"))
+	if err != nil || !strings.Contains(string(b), "node-wait") || !strings.Contains(string(b), "node-ready") {
+		t.Errorf("实例日志应分别记录等节点和节点可用：%s，错误 %v", b, err)
 	}
 }

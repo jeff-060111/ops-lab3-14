@@ -1,0 +1,1013 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="generator" content="build_guide_html.py">
+<title>实验 3：资源管理与应用运维</title>
+<meta name="description" content="互联网产品开发与运维（2026 秋季） · 实验 3：资源管理与应用运维">
+<style>
+:root{
+  --ground:#F4F6F8; --surface:#FFFFFF; --surface-2:#EDF1F5; --code-bg:#F0F3F7;
+  --ink:#1B2530; --ink-2:#4A5866; --muted:#6B7885; --rule:#D8DEE5; --rule-strong:#B9C3CE;
+  --accent:#2251C9; --accent-ink:#1B41A3; --accent-soft:#E8EEFB;
+  --amber:#B8681A; --amber-soft:#FBF1E4;
+  --red:#C23B32; --red-soft:#FBE9E7;
+  --green:#2E8B57; --green-soft:#E6F3EC; --on-accent:#fff; --on-green:#fff;
+  --serif:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC","Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,"Liberation Mono","Noto Sans Mono CJK SC",monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ground:#0E1319; --surface:#151B23; --surface-2:#1B222C; --code-bg:#10161D;
+    --ink:#E7ECF1; --ink-2:#B4BFCA; --muted:#8C98A4; --rule:#2B3541; --rule-strong:#3D4956;
+    --accent:#7FA3FF; --accent-ink:#A9C1FF; --accent-soft:#1B2740;
+    --amber:#E5A35A; --amber-soft:#2E2416;
+    --red:#F07A70; --red-soft:#3A1F1D;
+    --green:#5CC28A; --green-soft:#16281E; --on-accent:#0E1319; --on-green:#0E1319;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%; scroll-padding-top:20px}
+@media (prefers-reduced-motion: no-preference){ html{scroll-behavior:smooth} }
+body{margin:0; background:var(--ground); color:var(--ink); font-family:var(--sans); font-size:16px; line-height:1.75}
+a{color:var(--accent-ink); text-decoration-color:var(--rule-strong); text-underline-offset:3px; overflow-wrap:anywhere}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.skip{position:absolute; left:-999px; top:8px; background:var(--accent); color:var(--on-accent); padding:6px 12px; z-index:10}
+.skip:focus{left:8px}
+strong{font-weight:600}
+code{font-family:var(--mono); font-size:.9em; background:var(--surface-2); border:1px solid var(--rule); border-radius:3px; padding:0 .3em; overflow-wrap:break-word}
+pre code{background:none; border:none; padding:0; font-size:inherit; overflow-wrap:normal}
+
+.wrap{max-width:1120px; margin:0 auto; padding:0 20px}
+
+/* ---------- masthead ---------- */
+.masthead{padding:40px 0 26px; border-bottom:1px solid var(--rule); display:grid; grid-template-columns:minmax(0,1fr); gap:18px}
+.eyebrow{display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; color:var(--muted); font-size:13px; letter-spacing:.04em}
+.eyebrow .tag{font-family:var(--mono); font-size:12px; padding:2px 8px; border:1px solid var(--rule-strong); border-radius:3px; color:var(--ink-2)}
+.masthead h1{font-family:var(--serif); font-weight:700; line-height:1.3; font-size:clamp(28px,5.4vw,42px); margin:0; text-wrap:balance}
+.meta{display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; margin:0; max-width:880px}
+.meta div{background:var(--surface); border:1px solid var(--rule); border-radius:4px; padding:10px 14px}
+.meta dt{font-size:12px; color:var(--muted); letter-spacing:.06em}
+.meta dd{margin:2px 0 0; font-size:15px; font-weight:500}
+.meta dd.num{font-family:var(--mono); font-size:14px; color:var(--accent-ink)}
+
+/* ---------- layout ---------- */
+.layout{display:grid; grid-template-columns:230px minmax(0,1fr); gap:56px; align-items:start; padding-top:28px}
+main{min-width:0; max-width:780px; padding-bottom:72px}
+@media (max-width:979px){ .layout{grid-template-columns:minmax(0,1fr); gap:0; padding-top:16px} main{max-width:none} }
+
+/* ---------- table of contents ---------- */
+.toc-wrap{position:sticky; top:16px; max-height:calc(100vh - 32px); overflow:auto; font-size:14px; padding-right:4px}
+.toc-wrap summary{cursor:pointer; font-weight:600; color:var(--ink-2); padding:4px 0; list-style:none; letter-spacing:.06em}
+.toc-wrap summary::-webkit-details-marker{display:none}
+.toc-wrap summary::after{content:"▾"; margin-left:6px; color:var(--muted)}
+.toc-wrap:not([open]) summary::after{content:"▸"}
+.toc ol{list-style:none; margin:6px 0 0; padding:0}
+.toc li{margin:0}
+.toc a{display:block; text-decoration:none; color:var(--ink-2); padding:3px 10px; border-left:2px solid var(--rule); line-height:1.5}
+.toc a:hover{color:var(--ink); border-left-color:var(--rule-strong)}
+.toc a.active{color:var(--accent-ink); border-left-color:var(--accent); background:var(--accent-soft); font-weight:500}
+.toc ol ol a{padding-left:24px; font-size:13px}
+.toc .n{font-family:var(--mono); font-size:12px; color:var(--muted); margin-right:6px}
+@media (max-width:979px){
+  .toc-wrap{position:static; max-height:none; background:var(--surface); border:1px solid var(--rule); padding:10px 14px; margin-bottom:8px}
+}
+
+/* ---------- prose ---------- */
+h2,h3{font-family:var(--serif); font-weight:700; line-height:1.35; text-wrap:balance; position:relative}
+h2{font-size:25px; margin:60px 0 18px; padding-top:26px; border-top:1px solid var(--rule)}
+main > h2:first-child{margin-top:0; padding-top:0; border-top:none}
+h3{font-size:19.5px; margin:42px 0 14px}
+h2 .sec-num{font-family:var(--mono); font-size:14px; font-weight:500; color:var(--accent-ink); background:var(--accent-soft); border-radius:3px; padding:2px 8px; margin-right:12px; vertical-align:3px}
+h3 .badge{font-family:var(--mono); font-size:12px; font-weight:500; color:var(--muted); border:1px solid var(--rule-strong); border-radius:999px; padding:1px 9px; margin-left:10px; white-space:nowrap; vertical-align:2px}
+.anchor{position:absolute; left:-1.1em; color:var(--rule-strong); text-decoration:none; font-family:var(--mono); font-size:.8em; opacity:0}
+h2:hover .anchor,h3:hover .anchor,.anchor:focus{opacity:1}
+@media (max-width:979px){ .anchor{display:none} }
+p{margin:0 0 14px}
+ul,ol{margin:0 0 14px; padding-left:1.45em}
+li{margin:4px 0}
+li > p{margin:0 0 8px}
+li > ul,li > ol{margin:6px 0 4px}
+hr{border:none; border-top:1px solid var(--rule); margin:28px 0}
+
+/* ---------- tables ---------- */
+.tablewrap{overflow-x:auto; border:1px solid var(--rule); background:var(--surface); margin:0 0 18px}
+table{border-collapse:collapse; width:100%; font-size:14.5px; line-height:1.6}
+th,td{padding:9px 14px; border-bottom:1px solid var(--rule); text-align:left; vertical-align:top}
+th{font-weight:500; color:var(--muted); font-size:13px; letter-spacing:.03em; background:var(--surface-2); white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+td.nw{white-space:nowrap}
+table.wide-first th:first-child,table.wide-first td:first-child{width:34%}
+
+/* ---------- code ---------- */
+figure.code{margin:0 0 18px; border:1px solid var(--rule); background:var(--code-bg); border-radius:4px; overflow:hidden}
+figure.code figcaption{display:flex; justify-content:space-between; align-items:center; padding:4px 6px 4px 14px; background:var(--surface-2); border-bottom:1px solid var(--rule); font-family:var(--mono); font-size:12px; color:var(--muted)}
+.copy{font:inherit; font-size:12px; color:var(--ink-2); background:transparent; border:1px solid var(--rule-strong); border-radius:3px; padding:2px 10px; cursor:pointer}
+.copy:hover{background:var(--surface); color:var(--ink)}
+.copy.done{color:var(--green); border-color:var(--green)}
+figure.code pre{margin:0; padding:12px 16px; overflow-x:auto; font-family:var(--mono); font-size:13.5px; line-height:1.65; tab-size:4}
+figure.code .c{color:var(--muted)}
+
+/* ---------- callouts ---------- */
+.checkpoint{margin:20px 0 6px; padding:12px 16px 4px; background:var(--green-soft); border-left:3px solid var(--green); border-radius:0 4px 4px 0}
+.checkpoint .label{display:inline-block; font-size:12px; font-weight:600; letter-spacing:.08em; color:var(--on-green); background:var(--green); border-radius:3px; padding:1px 8px; margin-bottom:6px}
+.note{margin:0 0 18px; padding:12px 16px 2px; background:var(--amber-soft); border-left:3px solid var(--amber); border-radius:0 4px 4px 0}
+.note .label{display:inline-block; font-size:12px; font-weight:600; letter-spacing:.08em; color:var(--amber); margin-bottom:4px}
+
+/* ---------- flow diagram ---------- */
+figure.flows{margin:0 0 20px; padding:18px 18px 8px; background:var(--surface); border:1px solid var(--rule); border-radius:4px}
+.flow-title{font-size:13px; font-weight:600; color:var(--ink-2); margin:0 0 10px; letter-spacing:.03em}
+.flow-title span{font-family:var(--mono); color:var(--accent-ink); margin-right:4px}
+.flow{list-style:none; margin:0 0 16px; padding:0; display:flex; flex-wrap:wrap; align-items:stretch; gap:6px 4px}
+.flow li{margin:0}
+.node{display:flex; flex-direction:column; justify-content:center; gap:2px; padding:8px 12px; border:1px solid var(--rule-strong); background:var(--surface-2); border-radius:4px; font-size:14px; line-height:1.45}
+.node b{font-family:var(--mono); font-size:12.5px; color:var(--accent-ink)}
+.node .steps{color:var(--ink)}
+.node em{font-style:normal; font-size:12px; color:var(--muted)}
+.node.job{background:var(--accent-soft); border-color:var(--accent)}
+.node.end{background:var(--surface); border-color:var(--ink-2); font-weight:500}
+.edge{display:flex; flex-direction:column; align-items:center; justify-content:center; min-width:34px; color:var(--muted); font-size:11.5px; line-height:1.3; text-align:center; max-width:6.5em}
+.edge::after{content:"→"; font-size:18px; line-height:1; color:var(--ink-2)}
+.edge.down{flex-basis:100%; flex-direction:row; justify-content:flex-start; gap:8px; max-width:none; padding-left:14px}
+.edge.down::after{content:"↓"; order:-1}
+.edge.gate{color:var(--green); font-weight:600}
+.edge.gate::after{color:var(--green)}
+@media (max-width:640px){
+  .flow{flex-direction:column; align-items:stretch}
+  .edge{flex-direction:row; gap:6px; min-width:0; max-width:none; justify-content:flex-start; padding-left:18px}
+  .edge::after{content:"↓"}
+  .edge.down{padding-left:18px}
+}
+
+footer{border-top:1px solid var(--rule); padding:22px 0 40px; color:var(--muted); font-size:13px; display:flex; flex-wrap:wrap; gap:6px 20px}
+
+/* ---------- print ---------- */
+@page{size:A4; margin:16mm 14mm}
+@media print{
+  :root{
+    --ground:#fff; --surface:#fff; --surface-2:#F0F2F5; --code-bg:#F6F7F9;
+    --ink:#111820; --ink-2:#3A4654; --muted:#5C6773; --rule:#C9D0D8; --rule-strong:#9AA4AF;
+    --accent:#1F49B5; --accent-ink:#173A93; --accent-soft:#EDF1FB;
+    --amber:#A85E14; --amber-soft:#FBF3E8; --green:#2E7D4F; --green-soft:#EAF4EE; --on-accent:#fff; --on-green:#fff;
+    color-scheme:light;
+  }
+  body{font-size:11.5pt; line-height:1.6}
+  .wrap{max-width:none; padding:0}
+  .layout{display:block; padding-top:10px}
+  .toc-wrap,.copy,.anchor,.skip{display:none !important}
+  .masthead{padding:0 0 14px}
+  main{max-width:none; padding-bottom:0}
+  h2,h3{break-after:avoid}
+  h2{margin-top:30px}
+  figure,.tablewrap,.checkpoint,.note,tr{break-inside:avoid}
+  figure.code pre{white-space:pre-wrap; overflow-wrap:anywhere; font-size:10pt}
+  .tablewrap{overflow:visible}
+  a{color:var(--accent-ink); text-decoration:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">跳到正文</a>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow"><span>互联网产品开发与运维（2026 秋季）</span><span class="tag">实验 3</span></div>
+    <h1>实验 3：资源管理与应用运维</h1>
+    <dl class="meta">
+      <div><dt>发布</dt><dd class="num">2026-11-06</dd></div>
+      <div><dt>截止</dt><dd class="num">2026-11-20 23:59</dd></div>
+      <div><dt>形式</dt><dd>小组；实验资源以组为单位</dd></div>
+      <div><dt>占比</dt><dd class="num">总评 20%</dd></div>
+      <div><dt>检查方式</dt><dd>现场检查与答辩合并为一次，安排在截止之后的课外时间，每组约 30 分钟；具体时间另行通知</dd></div>
+      <div><dt>预计耗时</dt><dd class="num">约 12～14 小时</dd></div>
+    </dl>
+  </header>
+  <div class="layout">
+    <details class="toc-wrap" open>
+      <summary>目录</summary>
+      <nav class="toc" aria-label="目录">
+        <ol>
+          <li><a href="#s1"><span class="n">1</span>学习产出</a>
+          </li>
+          <li><a href="#s2"><span class="n">2</span>前置知识与环境</a>
+            <ol>
+              <li><a href="#h-1">统一示例</a></li>
+              <li><a href="#h-2">端口</a></li>
+            </ol>
+          </li>
+          <li><a href="#s3"><span class="n">3</span>拓扑与测量口径</a>
+            <ol>
+              <li><a href="#h-3">口径</a></li>
+              <li><a href="#h-4">每次实验产出的数据</a></li>
+            </ol>
+          </li>
+          <li><a href="#s4"><span class="n">4</span>任务</a>
+            <ol>
+              <li><a href="#task-0">任务 0：环境</a></li>
+              <li><a href="#h-5">任务 A：配额，节流与 OOM（约 3 小时）</a></li>
+              <li><a href="#h-6">任务 B：伸缩控制环（约 4 小时）</a></li>
+              <li><a href="#h-7">任务 C：故障注入（约 2.5 小时）</a></li>
+              <li><a href="#h-8">任务 D：发布与自愈（约 2.5 小时）</a></li>
+              <li><a href="#h-9">任务 E：数据与分析（约 2 小时）</a></li>
+            </ol>
+          </li>
+          <li><a href="#s5"><span class="n">5</span>选做</a>
+          </li>
+          <li><a href="#s6"><span class="n">6</span>常见问题</a>
+          </li>
+          <li><a href="#s7"><span class="n">7</span>提交与评分</a>
+          </li>
+          <li><a href="#s8"><span class="n">8</span>恢复与清理</a>
+          </li>
+          <li><a href="#s9"><span class="n">9</span>测量与局限</a>
+          </li>
+          <li><a href="#s10"><span class="n">10</span>参考资料</a>
+          </li>
+        </ol>
+      </nav>
+    </details>
+    <main id="content">
+<h2 id="s1"><span class="sec-num">1</span>学习产出<a class="anchor" href="#s1" aria-label="链接到本节">#</a></h2>
+<p>完成本实验后，应当能够：</p>
+<ol>
+<li>用 cgroup v2 给一个服务设置 CPU 与内存的上限，读 <code>cpu.stat</code>、<code>memory.events</code> 等计数，复现“平均用量低于 limit 也被节流”和“主机内存还有余量、进程仍被杀”，并与 L-09 的配额算术对照。</li>
+<li>实测一个伸缩控制环各段的延迟（指标、决策、拉镜像、启动与预热、就绪），在同一条“开放日”负载下比较常驻、反应式、定时预热三种方案的缺口、p99 与实例·分钟，用实测值替换 L-11 第 10 页的设定。</li>
+<li>在负载下注入停止、卡住、暂停、变慢四类故障，测出检出时间和失败请求数，说明进程管理与健康检查各能发现什么、不能发现什么，以及检出快与误判少之间的取舍（L-12、思考题 1 第四幕）。</li>
+<li>在恒定负载下完成一次滚动发布，比较有无排空与就绪检查时的失败请求数；观察自愈（自动重启）的效果与它掩盖的问题（L-05 第 22～24 页、L-13 第 9～15 页）。</li>
+<li>每项结论都能由提交的代码、配置、原始数据和分析检验，并写明成立条件与测量局限。</li>
+</ol>
+<p>本实验的前一半（任务 A、B）实践模块 6 的资源管理：L-09 的分配与隔离、L-11 的伸缩；后一半（任务 C、D）实践模块 7：L-12 的硬件与软件中的故障，L-05、L-13 的应用程序生命周期管理。贯穿全程的仍是同一个问题：这项技术解决了什么问题，又增加了什么成本？</p>
+<p>实验按“提出假设 → 施加负载或变更 → 收集证据 → 分析 → 改进并复测”的顺序安排：</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>环节</th>
+<th>本实验中的对应内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="nw">假设</td>
+<td>每项测量之前，按讲义的算术写下预测：节流时间、RSS、实例数、控制环延迟、检出时间、发布时长</td>
+</tr>
+<tr>
+<td class="nw">基线</td>
+<td>任务 A：配额 100% 时的每请求 CPU；任务 B0：单个实例的能力</td>
+</tr>
+<tr>
+<td class="nw">施加负载或变更</td>
+<td>改配额、加压到 OOM、开放日的到达曲线、注入故障、滚动发布</td>
+</tr>
+<tr>
+<td class="nw">证据</td>
+<td><code>runs/</code> 下每次实验的客户端结果（逐阶段、逐秒）、服务层与 cgroup 指标、lbd 的事件、scaler 的决策与实例记录</td>
+</tr>
+<tr>
+<td class="nw">分析</td>
+<td class="nw">任务 E 的四个问题</td>
+</tr>
+<tr>
+<td class="nw">改进与复测</td>
+<td>A2、A3 的两种改法；B 的三种方案与两种信号；C3 的离群摘除；D1 的排空加就绪</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="s2"><span class="sec-num">2</span>前置知识与环境<a class="anchor" href="#s2" aria-label="链接到本节">#</a></h2>
+<p>要求完成实验 2，熟悉其中的 <code>enrolld</code>、<code>loadgen</code>、Prometheus 与 <code>scripts/run.sh</code>。Go 只需能够编译，不要求编写；建议阅读 <code>cmd/lbd/</code> 与 <code>cmd/scaler/</code> 中的注释，它们说明了负载均衡和控制环的全部规则。</p>
+<div class="tablewrap"><table class="wide-first">
+<thead>
+<tr>
+<th>项</th>
+<th>要求（版本查于 2026-10-23）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="nw">主机</td>
+<td>组内一台 Linux 云主机，至少 2 个 vCPU、2 GB 内存，具有 root 权限（可以 <code>sudo</code>）。必做部分只使用这一台；可以沿用实验 2 的主机，现场检查时需在这台主机上重新运行实验，检查结束前不要释放</td>
+</tr>
+<tr>
+<td class="nw">系统</td>
+<td>命令按 Ubuntu 22.04 或 24.04 编写。必须使用 systemd 和 cgroup v2：<code>stat -fc %T /sys/fs/cgroup</code> 应输出 <code>cgroup2fs</code>，<code>cat /sys/fs/cgroup/cgroup.controllers</code> 中应有 <code>cpu</code>、<code>memory</code>。WSL2 和容器中不能完成本实验</td>
+</tr>
+<tr>
+<td class="nw">Go</td>
+<td class="nw">1.26 或更高版本</td>
+</tr>
+<tr>
+<td class="nw">sysstat</td>
+<td>同实验 2，任务 A 的 <code>scripts/run.sh</code> 用到</td>
+</tr>
+<tr>
+<td>Prometheus、node_exporter</td>
+<td>3.13.4、1.12.1，同实验 2；实验 2 的 <code>tools/</code> 可以直接复制过来</td>
+</tr>
+<tr>
+<td class="nw">示例</td>
+<td>课程模板仓库 <a href="https://github.com/zilinglius/operations-2026-lab3-sample" target="_blank" rel="noopener">https://github.com/zilinglius/operations-2026-lab3-sample</a>（<code>enroll-lab</code> 的实验 3 版）</td>
+</tr>
+</tbody>
+</table></div>
+<p>本实验只使用统一示例。如需将同样的方法用于小组项目，见选做 O7。</p>
+<h3 id="h-1">统一示例<a class="anchor" href="#h-1" aria-label="链接到本节">#</a></h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>程序</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="nw"><code>enrolld</code></td>
+<td>被测服务，读路径与实验 2 相同。新增：<code>/readyz</code> 就绪检查与预热（<code>-warmup</code>，预热期间就绪检查和业务接口都返回 503）；收到 SIGTERM 时先报未就绪，等 <code>-drain-delay</code>（默认 2 秒）后停止接收新请求，等在途请求做完再退出；版本标签 <code>-version</code>；<code>/api/report?mb=8&amp;ms=500</code> 每个请求另占 8 MB 内存、保持 500 ms，<code>-report-max</code> 限制同时处理的个数；<code>-leak-kb</code> 每个读请求泄漏一点内存；<code>-burn N</code> 让 N 个线程跑满并打印 cgroup 的节流计数；<code>/metrics</code> 新增 <code>cgroup_*</code> 指标</td>
+</tr>
+<tr>
+<td class="nw"><code>loadgen</code></td>
+<td>开环压测，同实验 2。新增 <code>-plan</code>（到达曲线，例如 <code>60@120s,60~600@30s,600@300s</code>：60 请求/秒 120 秒，30 秒内线性升到 600，再维持 300 秒）和 <code>-timeline</code>（逐秒输出）</td>
+</tr>
+<tr>
+<td class="nw"><code>lbd</code></td>
+<td>负载均衡器：轮询（默认）或最少连接；主动健康检查（默认每 1 秒请求一次 <code>/readyz</code>，连续失败 3 次判为不健康，连续成功 2 次恢复）；被动摘除离群实例（<code>-outlier</code>，默认关）；管理接口可以加入、移除、排空实例；<code>/metrics</code> 按实例输出 RED；每次状态变化记一行事件</td>
+</tr>
+<tr>
+<td class="nw"><code>scaler</code></td>
+<td>伸缩控制环：用 systemd 启动 <code>enrolld</code> 实例（每个一个 cgroup），登记到 <code>lbd</code>，按信号或定时表增减；记下每一次决策和每个实例的一生</td>
+</tr>
+<tr>
+<td class="nw"><code>lab3sum</code></td>
+<td>汇总一次经 lbd 的实验：缺口、实例·分钟、新实例各段耗时、伸缩决策、注入后的检出与恢复</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>scaler</code> 的规则（详见 <code>cmd/scaler/main.go</code> 开头的注释）：</p>
+<ul>
+<li>新建一个实例要经过三段：创建后先等 <code>-pull</code>（默认 20 秒，模拟拉镜像），再启动进程（预热 60 秒），最后由 <code>lbd</code> 的健康检查判为健康，才分到流量。L-11 第 10 页的设定是拉镜像约 20 s、启动预热约 1 min，示例按同样的数值设置。</li>
+<li>实例的参数由 <code>-args</code> 给出，默认 <code>-warmup 60s -work 1000000</code>：每个读请求的计算量是 enrolld 默认值的 5 倍，使配额 25% 的实例上限只有几十请求/秒，压测机和 lbd 不会先成为瓶颈。</li>
+<li><code>-mode fixed</code>：保持 <code>-replicas</code> 个实例，有实例死掉就补一个。</li>
+<li><code>-mode reactive</code>：每 <code>-sync</code>（默认 15 秒）决策一次，期望数 = ⌈当前数 × 信号 ÷ 目标⌉，与目标之比相差不到 10% 时不动；每次最多扩到当前的 2 倍或多 4 个；夹在最少与最多之间；缩容取最近 <code>-down-window</code>（默认 300 秒）内期望数的最大值。这是 Kubernetes HPA 的默认算法（L-11 第 13、15 页）。“当前数”含尚未就绪的实例，它们刚启动、几乎不用 CPU，会拉低信号的平均值，与 HPA 把未就绪实例按 0% 计的效果相同。</li>
+<li><code>-schedule +20s=4,+480s=2</code>：负载开始 20 秒后把最少实例数调到 4，480 秒后调回 2。“负载开始”是 <code>scripts/run3.sh</code> 开始加压的时刻。</li>
+</ul>
+<h3 id="h-2">端口<a class="anchor" href="#h-2" aria-label="链接到本节">#</a></h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>端口</th>
+<th>谁</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="nw">8080</td>
+<td class="nw"><code>lbd</code>：业务流量的入口</td>
+</tr>
+<tr>
+<td class="nw">8090</td>
+<td><code>lbd</code>：管理接口与 <code>/metrics</code></td>
+</tr>
+<tr>
+<td class="nw">8091</td>
+<td class="nw"><code>scaler</code>：管理接口</td>
+</tr>
+<tr>
+<td class="nw">8081</td>
+<td>任务 A 单独启动的 <code>enrolld</code></td>
+</tr>
+<tr>
+<td class="nw">8101 起</td>
+<td><code>scaler</code> 启动的实例，systemd 服务名为 <code>lab3-inst-&lt;端口&gt;</code></td>
+</tr>
+<tr>
+<td class="nw">9090</td>
+<td>Prometheus（被占用时换端口，见第 6 节）</td>
+</tr>
+<tr>
+<td class="nw">9100</td>
+<td>node_exporter</td>
+</tr>
+</tbody>
+</table></div>
+<p>全部只监听本机地址，不要在安全组中放通。</p>
+<h2 id="s3"><span class="sec-num">3</span>拓扑与测量口径<a class="anchor" href="#s3" aria-label="链接到本节">#</a></h2>
+<figure class="flows" aria-label="拓扑与测量位置">
+  <div class="flow-title"><span>①</span> 负载：一台主机上，压测与控制在核 0，全部实例在核 1</div>
+  <ol class="flow">
+    <li class="node"><b>loadgen</b><span class="steps">开环，-plan 到达曲线</span><em>逐秒结果在这里量</em></li>
+    <li class="edge"><span>HTTP :8080</span></li>
+    <li class="node job"><b>lbd</b><span class="steps">轮询；健康检查 /readyz</span><span class="steps">可选：离群摘除</span><em>事件、按实例的 RED</em></li>
+    <li class="edge"><span>转发</span></li>
+    <li class="node end"><b>实例 :8101…</b><span class="steps">systemd 服务，一个 cgroup</span><em>CPUQuota 25%、MemoryMax、AllowedCPUs</em></li>
+  </ol>
+  <div class="flow-title"><span>②</span> 控制环：测量 → 决策 → 执行（L-10 第 21 页、L-11 第 10 页）</div>
+  <ol class="flow">
+    <li class="node"><b>实例、lbd 的 /metrics</b><em>每 5 s、1 s 抓取</em></li>
+    <li class="edge"><span>拉取</span></li>
+    <li class="node job"><b>Prometheus</b><span class="steps">信号：PromQL</span></li>
+    <li class="edge"><span>每 15 s</span></li>
+    <li class="node job"><b>scaler</b><span class="steps">期望数 = ⌈当前 × 信号 ÷ 目标⌉</span><span class="steps">或定时表</span></li>
+    <li class="edge"><span>systemd-run</span></li>
+    <li class="node end"><b>新实例</b><span class="steps">拉镜像 → 预热 → 就绪</span><em>登记到 lbd</em></li>
+  </ol>
+  <div class="flow-title"><span>③</span> 记录：和负载同时写，结束后复制进 runs/&lt;名字&gt;/</div>
+  <ol class="flow">
+    <li class="node"><b>loadgen</b></li>
+    <li class="edge"><span></span></li>
+    <li class="node end"><b>steps.csv、timeline.csv</b><em>每个阶段、每秒一行</em></li>
+  </ol>
+  <ol class="flow">
+    <li class="node"><b>lbd、scaler、inject.sh</b></li>
+    <li class="edge"><span></span></li>
+    <li class="node end"><b>lbd-events.csv、decisions.csv、instances.csv、marks.csv</b><em>lab3sum 汇总为 summary.md</em></li>
+  </ol>
+</figure>
+<p>全部实例共用一个核，每个实例的 CPU 配额为 25%，一个核正好放 4 个，相当于课堂场景中节点池的 4 个空位（按比例缩放）。不论主机有几个核，实例都只用一个核，各组的空位数相同。loadgen、lbd、scaler、Prometheus、node_exporter 绑在另外的核上：</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>vCPU 数</th>
+<th>loadgen、lbd、scaler、Prometheus、node_exporter（<code>GEN_CPUS</code>）</th>
+<th>实例（<code>scaler -cpus</code>）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="nw">2</td>
+<td class="nw"><code>0</code></td>
+<td class="nw"><code>1</code>（默认）</td>
+</tr>
+<tr>
+<td class="nw">4</td>
+<td class="nw"><code>0-1</code></td>
+<td class="nw"><code>2</code></td>
+</tr>
+<tr>
+<td class="nw">8 及以上</td>
+<td class="nw"><code>0-3</code></td>
+<td class="nw"><code>4</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>任务 A 只启动一个实例 <code>lab3-a</code>，端口 8081，用 <code>scripts/run.sh</code> 分阶段加压，同实验 2。</p>
+<h3 id="h-3">口径<a class="anchor" href="#h-3" aria-label="链接到本节">#</a></h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>测量位置</th>
+<th>计算方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="nw">节流比例</td>
+<td>实例的 cgroup（<code>cpu.stat</code>）</td>
+<td>被节流的周期数 ÷ 全部周期数（L-09 第 13 页）</td>
+</tr>
+<tr>
+<td class="nw">每线程每周期被停</td>
+<td><code>enrolld -burn</code></td>
+<td><code>throttled_usec</code> 按 CPU 累计，除以周期数和线程数</td>
+</tr>
+<tr>
+<td class="nw">逐秒结果</td>
+<td>loadgen 的 <code>timeline.csv</code></td>
+<td>按计划发送时刻归入所在的秒；<code>errors</code> 为非 2xx、超时、连接错误；<code>slow</code> 为成功但超过 <code>SLO</code> 的请求；<code>p99_ms</code> 只统计成功的请求</td>
+</tr>
+<tr>
+<td class="nw">缺口</td>
+<td class="nw"><code>lab3sum</code></td>
+<td>出现错误、或成功请求的 p99 超过 <code>SLO</code>（默认 0.2 秒）的秒，连成区间（L-11 第 20 页的“缺口”在本实验中的测法）</td>
+</tr>
+<tr>
+<td class="nw">实例·分钟</td>
+<td><code>lab3sum</code>，依据 <code>instances.csv</code></td>
+<td>每个实例从“创建”（开始拉镜像）算到“停止”或“死掉”，只计负载期间（与思考题 3 第四幕的计费口径相同）</td>
+</tr>
+<tr>
+<td class="nw">新实例的各段</td>
+<td><code>lab3sum</code>，依据 <code>instances.csv</code></td>
+<td>拉镜像 = 启动 − 创建；启动到就绪 = 就绪 − 启动（含预热和健康检查的连续成功）</td>
+</tr>
+<tr>
+<td class="nw">检出时间</td>
+<td><code>lab3sum</code>，依据 <code>marks.csv</code> 与 <code>lbd-events.csv</code></td>
+<td>注入时刻到 lbd 第一次判定的时间。判定有三种：<code>down</code> 是健康检查判为不健康，<code>ejected</code> 是离群摘除，<code>removed</code> 是 scaler 通过管理接口把实例删除</td>
+</tr>
+<tr>
+<td class="nw">其余</td>
+<td class="nw">同实验 2</td>
+<td>吞吐、错误率、分位数的口径见实验 2 指导书第 3 节</td>
+</tr>
+</tbody>
+</table></div>
+<p>Little's Law（L = λ × W）中的 W 是平均时间，必须使用平均值，不能代入 p99；各阶段、各实例的分位数也不能直接平均（L-08 第 10、13 页）。</p>
+<h3 id="h-4">每次实验产出的数据<a class="anchor" href="#h-4" aria-label="链接到本节">#</a></h3>
+<p>任务 A：<code>scripts/run.sh &lt;名字&gt; …</code>，与实验 2 相同（<code>meta.txt</code>、<code>steps.csv</code>、<code>red.csv</code>、<code>use.csv</code>、资源层原始日志等）。<code>red.csv</code> 的查询见 <code>deploy/queries-red.txt</code>，其中有 cgroup 的 CPU 与内存。</p>
+<p>任务 B、C、D：<code>scripts/run3.sh &lt;名字&gt; …</code>，结果存入 <code>runs/&lt;名字&gt;/</code>：</p>
+<div class="tablewrap"><table class="wide-first">
+<thead>
+<tr>
+<th>文件</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="nw"><code>meta.txt</code></td>
+<td>主机、lbd 与 scaler 的参数和当时的实例、压测命令、仓库提交</td>
+</tr>
+<tr>
+<td><code>steps.csv</code>、<code>timeline.csv</code></td>
+<td>客户端：每个阶段一行；每秒一行</td>
+</tr>
+<tr>
+<td><code>lbd-events.csv</code></td>
+<td>lbd 的状态变化：加入、不健康（down）、恢复（up）、摘除（ejected）、排空、移除</td>
+</tr>
+<tr>
+<td><code>decisions.csv</code></td>
+<td>scaler 的每一次决策：信号、当前数、就绪数、最少与最多、算出的与最终的期望数、动作</td>
+</tr>
+<tr>
+<td><code>instances.csv</code></td>
+<td>每个实例的一生：创建、启动、就绪、不健康、重新登记、排空、停止、死掉、systemd 重启。直接替换（D1）的新实例先记 <code>assumed-up</code>（lbd 未经健康检查就按健康分流量），等 lbd 判为健康时才记就绪</td>
+</tr>
+<tr>
+<td class="nw"><code>marks.csv</code></td>
+<td><code>scripts/inject.sh</code> 记下的注入</td>
+</tr>
+<tr>
+<td><code>lbd-metrics-end.txt</code></td>
+<td>结束时 lbd 的 <code>/metrics</code> 原文。计数从 lbd 启动时累计，不是只算这一次负载；只看一次负载的，用 Prometheus 按时间范围查询</td>
+</tr>
+<tr>
+<td class="nw"><code>summary.md</code></td>
+<td><code>lab3sum</code> 的汇总，可以直接把其中的表格粘贴进 <code>LAB3.md</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="s4"><span class="sec-num">4</span>任务<a class="anchor" href="#s4" aria-label="链接到本节">#</a></h2>
+<p>每个任务末尾的“检查点”供各组自查，现场检查也以此为依据。证据应在操作过程中及时填入 <code>LAB3.md</code>。</p>
+<p>本实验需要同时打开四个终端（或用 tmux 打开四个窗口），下文分别称为终端 A、B、C、D：A 运行 node_exporter 和 Prometheus，B 运行 <code>lbd</code>，C 运行 <code>scaler</code>，D 用于执行实验。四个终端都先进入仓库根目录。<code>scaler</code>、<code>systemd-run</code>、<code>scripts/inject.sh</code>、<code>scripts/cleanup.sh</code> 需要 root，命令前加 <code>sudo</code>；其余命令用普通用户运行即可。</p>
+<h3 id="task-0">任务 0：环境<span class="badge">约 30 分钟</span><a class="anchor" href="#task-0" aria-label="链接到本节">#</a></h3>
+<ol>
+<li>
+<p>组长打开模板仓库 <a href="https://github.com/zilinglius/operations-2026-lab3-sample" target="_blank" rel="noopener">https://github.com/zilinglius/operations-2026-lab3-sample</a>，点击 Use this template → Create a new repository。所有者选择组长账号，仓库名为 <code>ops-lab3-&lt;组号&gt;</code>，可见性选择 Public。在 Settings → Collaborators 中邀请组员并授予 Write 权限。本实验不要求使用 PR。</p>
+</li>
+<li>
+<p>在实验主机上克隆小组仓库，编译并准备工具：</p>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>git clone https://github.com/&lt;组长账号&gt;/ops-lab3-&lt;组号&gt;.git ~/lab3 &amp;&amp; cd ~/lab3
+make build test
+cp -r ~/lab2/tools . 2&gt;/dev/null || scripts/get-tools.sh   <span class="c"># 沿用实验 2 下载好的 Prometheus、node_exporter</span>
+mkdir -p data</code></pre></figure>
+</li>
+<li>
+<p>检查 systemd 与 cgroup，记录主机信息，填入 <code>LAB3.md</code> 第 1 节：</p>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>stat -fc %T /sys/fs/cgroup; cat /sys/fs/cgroup/cgroup.controllers; systemctl --version | head -n 1
+lscpu; free -m; swapon --show; uname -r; cat /etc/os-release</code></pre></figure>
+</li>
+<li>
+<p>终端 A 启动 node_exporter 和 Prometheus（4 核主机将 <code>taskset -c 0</code> 换成 <code>taskset -c 0-1</code>）：</p>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>taskset -c 0 tools/node_exporter --web.listen-address=127.0.0.1:9100 &gt; data/node_exporter.log 2&gt;&amp;1 &amp;
+taskset -c 0 tools/prometheus --config.file=deploy/prometheus.yml \
+  --storage.tsdb.path=/dev/shm/lab3-prom --web.listen-address=127.0.0.1:9090</code></pre></figure>
+</li>
+</ol>
+<div class="checkpoint"><span class="label">检查点</span><p><code>LAB3.md</code> 第 1 节已填写；<code>curl -s 127.0.0.1:9090/api/v1/targets</code> 能返回结果（此时 enrolld、lbd 的目标还是 down，属于正常）。</p></div>
+<h3 id="h-5">任务 A：配额，节流与 OOM（约 3 小时）<a class="anchor" href="#h-5" aria-label="链接到本节">#</a></h3>
+<h4>A1 配额算术</h4>
+<ol>
+<li>
+<p><strong>先预测</strong>：配额 0.5 核、周期 100 ms（<code>CPUQuota=50%</code>）时，1 个和 2 个线程跑满，每个线程每个周期运行多久、被停多久（L-09 第 12 页）？本机上 enrolld 的 GOMAXPROCS 会是几？Go 1.25 起，GOMAXPROCS 默认取 CPU 核数、绑核数与 cgroup 的 CPU 限额三者中最小的，限额向上取整，并且不小于 2（主机只有 1 个核时除外）。写入 <code>LAB3.md</code> 第 2.1 节。</p>
+</li>
+<li>
+<p>在一个临时的 cgroup（systemd 的 scope）中运行：</p>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>for n in 1 2; do sudo systemd-run --quiet --scope -p CPUQuota=50% bin/enrolld -burn $n -for 10s; done</code></pre></figure>
+<p>输出中有 cgroup 的路径、<code>cpu.max</code> 折合的配额、GOMAXPROCS、实际用核、周期数、被节流的周期数，以及每个线程每个周期被停的实测值与算术值。将两次的输出粘贴进 <code>LAB3.md</code>。</p>
+</li>
+</ol>
+<h4>A2 节流与 p99</h4>
+<ol>
+<li>
+<p>终端 D 以 systemd 服务启动一个实例，先不限 CPU（配额 100% 即一个核），每个请求的计算量是实验 2 默认值的 10 倍：</p>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>sudo systemd-run --unit=lab3-a -p CPUQuota=100% -p MemoryMax=256M $PWD/bin/enrolld -addr 127.0.0.1:8081 -data $PWD/data/a -work 2000000
+curl -s 127.0.0.1:8081/config | grep -E 'gomaxprocs|cgroup'</code></pre></figure>
+<p>实例可以使用全部核，GOMAXPROCS 至少为 2，因此两个请求可以同时在两个核上计算。本步骤与 loadgen 共用核 0，在第 9 节的局限中说明。</p>
+</li>
+<li>
+<p>打开 <code>deploy/queries-red.txt</code>，将 <code>throttle_ratio</code> 一行的 TODO 换成本组写的 PromQL：被节流的周期占全部周期的比例（L-09 第 13 页）。所用的两个计数器是 <code>cgroup_cpu_throttled_periods_total</code> 和 <code>cgroup_cpu_periods_total</code>，只看 <code>job=&quot;enrolld&quot;</code>。</p>
+</li>
+<li>
+<p>测基线：<code>scripts/run.sh a2-base -url http://127.0.0.1:8081/api/courses/1 -rates 30,60 -step 20s</code>，从 <code>red.csv</code> 读出每请求 CPU（<code>cpu_ms_per_req</code>）。选一个到达率 R，使平均用量约为 0.4 核：R ≈ 0.4 ÷ 每请求 CPU 秒数。</p>
+</li>
+<li>
+<p><strong>先预测</strong>：配额改为 50% 时，平均用量（约 0.4 核）仍低于配额，p99 会不会变？写入第 2.2 节。然后不重启服务，直接修改配额，以 R 运行两个阶段：</p>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>sudo systemctl set-property --runtime lab3-a CPUQuota=50%
+scripts/run.sh a2-q50 -url http://127.0.0.1:8081/api/courses/1 -rates R,R -step 20s     <span class="c"># R 换成本组的到达率</span>
+scripts/table.sh runs/a2-q50 ok_rps p50_ms p99_ms server_p99_ms gomaxprocs cg_limit_cores cg_cpu_cores throttle_ratio throttled_s_per_s</code></pre></figure>
+<p><code>a2-base</code> 中同一到达率的阶段就是配额 100% 的对照。</p>
+</li>
+<li>
+<p><strong>两种改法，各测一次</strong>：</p>
+<ul>
+<li>改法一：按 L-09 第 13 页，limit 按峰值 ÷ 0.7 定。以本组测得的平均用量估算，改为相应的配额（例如 70%），再运行一次。</li>
+<li>改法二：配额仍为 50%，让同时忙的线程数不超过配额：停止服务（<code>sudo systemctl stop lab3-a</code>），在第 1 步的命令中加 <code>--setenv=GOMAXPROCS=1</code> 重新启动，再运行一次。</li>
+</ul>
+</li>
+</ol>
+<h4>A3 OOM</h4>
+<ol>
+<li>
+<p><strong>先预测</strong>：<code>/api/report?mb=8&amp;ms=500</code> 的每个请求另占 8 MB、保持 500 ms。到达率为 10、20、30 时，平均有几个在途请求（Little's Law），RSS 大约多少？Go 的垃圾回收在堆增长到上次回收后存活数据的约 2 倍（<code>GOGC=100</code>）时才回收，这会怎样影响估计？在 <code>MemoryMax=200M</code> 下，会在哪一个阶段被杀？写入第 2.3 节。</p>
+</li>
+<li>
+<p>重新启动实例，限制内存并禁止使用 swap，然后加压：</p>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>sudo systemctl stop lab3-a; sudo systemctl reset-failed lab3-a
+sudo systemd-run --unit=lab3-a -p MemoryMax=200M -p MemorySwapMax=0 $PWD/bin/enrolld -addr 127.0.0.1:8081 -data $PWD/data/a
+scripts/run.sh a3-oom -url 'http://127.0.0.1:8081/api/report?mb=8&amp;ms=500' -rates 10,20,30 -step 20s
+scripts/table.sh runs/a3-oom ok_rps error_rate p99_ms inflight_avg report_inflight_max rss_max_mb heap_max_mb mem_current_max_mb mem_limit_mb
+systemctl show -p ActiveState,Result,ExecMainStatus lab3-a; journalctl -u lab3-a --no-pager | tail -n 5
+sudo dmesg | grep -i oom-kill | tail -n 2</code></pre></figure>
+<p><code>MemoryMax</code> 只限制内存，不限制 swap。主机有 swap 时若不设 <code>MemorySwapMax=0</code>，超出的部分会被换出，进程先是越来越慢，很久之后才被杀。</p>
+</li>
+<li>
+<p><strong>两种改法，各测一次</strong>（每次先 <code>sudo systemctl reset-failed lab3-a</code>，用新的参数重启）：</p>
+<ul>
+<li>改法一：按最坏情况定 limit。以到达率 20 为目标，用 <code>report_inflight_max</code> 和 GC 的影响算出所需的内存，加约 10% 余量，作为新的 <code>MemoryMax</code>。</li>
+<li>改法二：limit 仍为 200M，用 <code>-report-max</code> 限制同时处理的报表数（L-06 第 17 页的有界并发），超出的请求立即返回 503。按“上限 × 8 MB × 2（GC）+ 基线 &lt; 200 MB”选取上限。</li>
+</ul>
+</li>
+<li>
+<p>完成后停止实例：<code>sudo systemctl stop lab3-a; sudo systemctl reset-failed lab3-a</code>。</p>
+</li>
+</ol>
+<div class="checkpoint"><span class="label">检查点</span><p>第 2 节已写预测；A1 两次的输出齐全；A2 有配额 100%、50% 和两种改法的数据；A3 有被杀的证据和两种改法的数据；<code>deploy/queries-red.txt</code> 的 <code>throttle_ratio</code> 已填写。</p></div>
+<h3 id="h-6">任务 B：伸缩控制环（约 4 小时）<a class="anchor" href="#h-6" aria-label="链接到本节">#</a></h3>
+<ol>
+<li>
+<p><strong>启动 lbd 和 scaler。</strong> 终端 B：<code>taskset -c 0 bin/lbd</code>。终端 C（4 核主机将 <code>taskset -c 0</code> 换成 <code>taskset -c 0-1</code>、<code>-cpus 1</code> 换成 <code>-cpus 2</code>）：</p>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>sudo taskset -c 0 bin/scaler -mode fixed -replicas 1 -cpus 1</code></pre></figure>
+<p>scaler 会打印每个实例的创建、启动、就绪。约 85 秒后实例就绪，<code>curl -s 127.0.0.1:8090/backends</code> 中 <code>&quot;up&quot;: true</code>。</p>
+</li>
+<li>
+<p><strong>B0：单个实例的能力。</strong></p>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>export GEN_CPUS=0
+scripts/run3.sh b0-one -url http://127.0.0.1:8080/api/courses/1 -rates 20,40,60,80,100 -step 20s</code></pre></figure>
+<p>从 <code>steps.csv</code> 读出每个阶段的吞吐、错误率和 p99，找出单个实例（25% CPU）的上限（开始出错之前最大的 <code>ok_rps</code>）与按 0.7 容量线可承担的到达率 C = 0.7 × 上限。将本组的到达曲线定为：峰值 P = 4 × C（取整到 10），平时 P ÷ 10；用 <code>scripts/plan.sh &lt;平时&gt; &lt;峰值&gt;</code> 生成，例如 <code>scripts/plan.sh 20 200</code>。整条曲线共 630 秒：平时 120 秒，30 秒爬升，峰值 300 秒，60 秒回落，平时 120 秒。峰值要用满 4 个空位，而 2 个实例在峰值时已经超过上限。</p>
+</li>
+<li>
+<p><strong>先预测</strong>：峰值需要几个实例？反应式从爬升开始到新实例就绪大约要多久，缺口大约多长？定时预热最晚何时开始？写入第 3.1 节。</p>
+</li>
+<li>
+<p><strong>B1～B3</strong>，每种方案先在终端 C 按 Ctrl-C 停止 scaler（它会停掉自己的全部实例），再按下面的参数启动，等最少的那几个实例就绪后，在终端 D 运行同一条曲线（<code>PLAN=$(scripts/plan.sh 20 200)</code>，数字换成本组的）：</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>方案</th>
+<th>终端 C 的 scaler</th>
+<th>终端 D</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="nw">B1 常驻</td>
+<td><code>sudo taskset -c 0 bin/scaler -mode fixed -replicas 4</code></td>
+<td><code>scripts/run3.sh b1-fixed -url http://127.0.0.1:8080/api/courses/1 -plan &quot;$PLAN&quot;</code></td>
+</tr>
+<tr>
+<td>B2 反应式，信号一（CPU）</td>
+<td><code>sudo taskset -c 0 bin/scaler -mode reactive -min 2 -max 4 -signal &quot;$CPU&quot;</code></td>
+<td><code>scripts/run3.sh b2-cpu …</code>（同上）</td>
+</tr>
+<tr>
+<td>B2 反应式，信号二（到达率）</td>
+<td><code>sudo taskset -c 0 bin/scaler -mode reactive -min 2 -max 4 -target C -signal &quot;$QPS&quot;</code></td>
+<td><code>scripts/run3.sh b2-qps …</code></td>
+</tr>
+<tr>
+<td class="nw">B3 定时加反应式</td>
+<td><code>sudo taskset -c 0 bin/scaler -mode reactive -min 2 -max 4 -schedule &quot;+20s=4,+480s=2&quot; -signal &quot;$CPU&quot;</code></td>
+<td><code>scripts/run3.sh b3-sched …</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>其中两个信号（在终端 C 先定义）：</p>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>CPU='avg(rate(cgroup_cpu_usage_seconds_total{job="instances"}[15s])) / ${quota}'                   <span class="c"># CPU 利用率（按配额计），目标默认 0.7</span>
+QPS='sum(rate(lb_requests_total{backend!="none"}[15s])) / count(up{job="instances"} == 1)'       <span class="c"># 每个实例分到的到达率，目标为 C</span></code></pre></figure>
+<p><code>${quota}</code> 由 scaler 换成每个实例的配额核数（0.25）。B3 的定时表按本组的预测修改：负载开始后第几秒把最少实例数调高到几，峰值过后何时调回。</p>
+</li>
+<li>
+<p><strong>整理</strong>：每次运行结束，<code>runs/&lt;名字&gt;/summary.md</code> 中有缺口、实例·分钟、新实例的各段耗时和伸缩决策。以 B2（信号一）为例，按第 3.3 节的表拆出控制环各段的实测值：爬升从第 120 秒开始，第一次扩容决策在第几秒，新实例何时启动、何时就绪。再看缺口中的错误是哪几种：<code>steps.csv</code> 的 <code>timeout</code>（客户端 2 秒超时）与 <code>codes</code>（lbd 返回的状态码，503 表示当时没有可用的实例），以及 <code>lbd-events.csv</code> 中这段时间的 <code>down</code>、<code>up</code>。</p>
+</li>
+</ol>
+<div class="checkpoint"><span class="label">检查点</span><p>第 3 节已写预测；B0、B1、B2（两种信号）、B3 的数据齐全，条件可比（同一条曲线、同一台主机、连续进行）；第 3.2、3.3 节的表已填写。</p></div>
+<h3 id="h-7">任务 C：故障注入（约 2.5 小时）<a class="anchor" href="#h-7" aria-label="链接到本节">#</a></h3>
+<p>本任务固定 3 个实例，恒定负载取 2C（3 个实例按容量线可承担 3C；坏掉一个时剩下的 2 个仍然够用。下文以 100 请求/秒为例，换成本组的 2C）。终端 C：<code>sudo taskset -c 0 bin/scaler -mode fixed -replicas 3</code>，等 3 个实例都就绪。</p>
+<ol>
+<li>
+<p><strong>C1 停止与卡住。</strong> 先预测：按 lbd 的默认参数（每 1 秒检查一次、超时 500 ms、连续失败 3 次），一个实例停止（进程退出）或卡住（进程还在，但不再响应）以后，多久被判定，其间约有多少请求出错？然后在终端 D 运行 240 秒的恒定负载，另开一个终端在约第 60 秒停止一个实例，约第 160 秒让另一个实例卡住 20 秒：</p>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>scripts/run3.sh c1-stop -url http://127.0.0.1:8080/api/courses/1 -plan 100@240s     <span class="c"># 终端 D</span>
+sudo scripts/inject.sh kill 8102                                                    <span class="c"># 另一个终端，第 60 秒左右</span>
+sudo scripts/inject.sh pause 8103 20                                                <span class="c"># 第 160 秒左右</span></code></pre></figure>
+<p>scaler 发现实例死掉后会补建一个（拉镜像加预热，约 85 秒）。<code>summary.md</code> 的“注入”表给出两次注入的判定（注意是 <code>removed</code> 还是 <code>down</code>）与恢复用时，“实例”表给出补建的实例何时就绪。</p>
+</li>
+<li>
+<p><strong>C2 暂停（模拟网络抖动）。</strong> 把全部实例暂停 2 秒再恢复，在两组健康检查参数下各做一次。每组参数都要重启 lbd（终端 B 按 Ctrl-C 后用新参数启动），scaler 会在几秒内把实例重新登记到新的 lbd，等全部恢复健康后再开始：</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>终端 B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="nw">宽松（默认）</td>
+<td><code>taskset -c 0 bin/lbd</code></td>
+</tr>
+<tr>
+<td class="nw">灵敏</td>
+<td><code>taskset -c 0 bin/lbd -check-interval 500ms -check-timeout 200ms -fall 1</code></td>
+</tr>
+</tbody>
+</table></div>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>scripts/run3.sh c2-default -url http://127.0.0.1:8080/api/courses/1 -plan 100@120s   <span class="c"># 终端 D；灵敏参数时名字改为 c2-sensitive</span>
+sudo scripts/inject.sh pause all 2                                                  <span class="c"># 第 40 秒左右</span></code></pre></figure>
+<p>比较两次的错误数与错误持续的时间（思考题 1 第四幕的“全站 502 三分钟”）。</p>
+</li>
+<li>
+<p><strong>C3 变慢（先看现象）。</strong> 恢复默认参数的 lbd。运行 240 秒的恒定负载，在约第 60 秒把一个实例的 CPU 配额从 25% 调低，第 180 秒调回。调到多少由本组的数据决定：在 Prometheus 中查 C1 注入之前（前 60 秒）每个实例的用量 U（<code>rate(cgroup_cpu_usage_seconds_total{job=&quot;instances&quot;}[30s])</code>，单位为核），把配额调到约 U ÷ 0.85，取整到百分数（例如 U = 0.13 核时取 15%）。先预测：这个实例的延迟会怎样变化，健康检查能不能发现？</p>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>scripts/run3.sh c3-slow -url http://127.0.0.1:8080/api/courses/1 -plan 100@240s
+sudo scripts/inject.sh slow 8102 15       <span class="c"># 第 60 秒左右；15 换成本组算出的配额</span>
+sudo scripts/inject.sh restore 8102 25    <span class="c"># 第 180 秒左右</span></code></pre></figure>
+<p>健康检查全部通过，全站的 p99 却变大了。先找出是哪一台、为什么健康检查看不见：在 Prometheus 中按 <code>backend</code> 拆开 lbd 的延迟，例如 <code>histogram_quantile(0.99, sum by (backend, le) (rate(lb_request_duration_seconds_bucket[30s])))</code>，时间范围选这次负载。再用 <code>taskset -c 0 bin/lbd -outlier</code> 重启 lbd，以 <code>c3-outlier</code> 为名重做一次，比较被摘除的时刻和全站 p99。离群摘除的规则见 <code>bin/lbd -h</code> 中 <code>-outlier-*</code> 的说明。</p>
+</li>
+</ol>
+<div class="checkpoint"><span class="label">检查点</span><p>第 4 节已写预测；C1（停止与卡住）、C2（两组参数）、C3（不摘除与离群摘除）的数据齐全；<code>marks.csv</code> 记下了每次注入。</p></div>
+<h3 id="h-8">任务 D：发布与自愈（约 2.5 小时）<a class="anchor" href="#h-8" aria-label="链接到本节">#</a></h3>
+<ol>
+<li>
+<p><strong>D1 滚动发布。</strong> 固定 3 个实例、恒定负载同任务 C。先预测：按 L-05 第 24 页“发布时间 = 实例数 ×（停止 + 启动 + 就绪）÷ 并行度”，3 个实例逐个替换要多久？直接替换时大约多少请求出错？然后各做一次：</p>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>scripts/run3.sh d1-naive -url http://127.0.0.1:8080/api/courses/1 -plan 100@180s           <span class="c"># 终端 D</span>
+curl -X POST '127.0.0.1:8091/rollout?version=v2&amp;mode=naive'                                <span class="c"># 第 30 秒左右，另一个终端</span></code></pre></figure>
+<p><code>naive</code> 是直接替换：逐个 SIGKILL 旧实例，马上在同一个端口上启动新版本，每个之间只隔 5 秒，不等它就绪。之后用 <code>graceful</code> 再做一次（版本写 <code>v3</code>，负载时长改为 <code>420s</code>）：先起一个新版本的实例，等它就绪，再在 lbd 中排空一个旧实例、等在途请求做完、发 SIGTERM，逐个进行。<code>summary.md</code> 的“实例”表给出每个实例的替换时刻。</p>
+</li>
+<li>
+<p><strong>D2 自愈。</strong> 在终端 C 停止 scaler，改为让 systemd 在实例退出后自动重启，并让每个读请求泄漏 16 KB 内存：</p>
+<figure class="code"><figcaption><span>bash</span><button class="copy" type="button" aria-label="复制这段代码">复制</button></figcaption><pre><code>sudo taskset -c 0 bin/scaler -mode fixed -replicas 3 -restart on-failure -memory 64M -args "-warmup 10s -work 1000000 -leak-kb 16"</code></pre></figure>
+<p>先预测：每个实例每秒约分到三分之一的请求，多久会碰到 64 MB 的上限（别忘了 GC 的影响）？有 3 个实例，一个重启时服务会怎样？然后运行 480 秒的恒定负载 <code>scripts/run3.sh d2-heal -url http://127.0.0.1:8080/api/courses/1 -plan 100@480s</code>。记下全程的成功率与缺口，用 <code>systemctl show -p NRestarts lab3-inst-8101</code> 等查看每个实例被 systemd 重启了几次；<code>summary.md</code> 的“实例”表有负载期间的重启次数，<code>instances.csv</code> 的 <code>restarted</code> 行有每次重启的时刻，与缺口的时刻对照。最后在 Prometheus 中写一条查询，统计最近 10 分钟实例重启的次数（提示：<code>process_start_time_seconds</code> 每次重启都会变；<code>changes()</code> 统计一个值变化的次数），作为告警规则的表达式，写入第 5.2 节。</p>
+</li>
+</ol>
+<div class="checkpoint"><span class="label">检查点</span><p>第 5 节已写预测；D1 两种做法、D2 的数据齐全；告警查询能在 Prometheus 中得到非零的结果。</p></div>
+<h3 id="h-9">任务 E：数据与分析（约 2 小时）<a class="anchor" href="#h-9" aria-label="链接到本节">#</a></h3>
+<p>回答 <code>LAB3.md</code> 第 6 节的四个问题：配额；控制环；健康检查；发布与自愈。必须使用本组的数据作答，引用具体的表或文件，并写明结论的成立条件。</p>
+<p>最后将 <code>runs/</code> 下所有被 <code>LAB3.md</code> 引用的目录、修改后的 <code>deploy/queries-red.txt</code> 和 <code>LAB3.md</code> 一并提交。不要提交 <code>bin/</code>、<code>tools/</code>、<code>data/</code>，<code>.gitignore</code> 已将其排除。</p>
+<h2 id="s5"><span class="sec-num">5</span>选做<a class="anchor" href="#s5" aria-label="链接到本节">#</a></h2>
+<p>选做不影响必做部分的评分，仅用于加分，上限见第 7 节。每项都须先写下预期，再进行测量。</p>
+<ul>
+<li>O1 GOMEMLIMIT：在 A3 的条件下，用 <code>--setenv=GOMEMLIMIT=170MiB</code> 启动实例，比较是否还会被杀、在哪一个阶段被杀，以及 GC 的次数和 CPU 代价。说明 GOMEMLIMIT 与 <code>MemoryMax</code> 各管什么。</li>
+<li>O2 两层伸缩：修改 <code>scaler</code>（<code>cmd/scaler/</code>），模拟“空位有限、加节点要等”：同时运行的实例超过某个数时，新实例要多等一段时间（例如 240 秒）才能启动。复现 L-11 第 17 页的约 2 分钟与约 6 分钟两条路径，测出缺口的变化。</li>
+<li>O3 扩错层：写路径 <code>/api/enroll</code> 用 <code>-sync each</code>（<code>-args &quot;-sync each&quot;</code>）。先预测：多个实例共用一块盘，加实例能否提高写 TPS？再用 B2 的方法验证（L-11 引例的症状 B、L-07 第 14 页的 fsync）。</li>
+<li>O4 Kubernetes：在同一台或第二台主机上用 kind 或 k3s 部署 <code>enrolld</code>，配置 HPA，用 B 的曲线重做 B2，比较 HPA 的默认行为与 <code>scaler</code> 的差别。</li>
+<li>O5 换负载均衡器：用 HAProxy 或 Nginx 替换 <code>lbd</code>，配置健康检查，重做 C1、C3，比较两者的检出时间与配置方式。</li>
+<li>O6 两台主机：把 loadgen 与 lbd 放在第二台主机上（两台在同一 VPC，安全组只对第二台的内网地址放通 8080），比较网络带来的差别。完成后删除放通的规则。</li>
+<li>O7 迁移到小组项目：给小组项目设一项 CPU 或内存配额，或加一条就绪检查，测一次并说明结论。</li>
+</ul>
+<h2 id="s6"><span class="sec-num">6</span>常见问题<a class="anchor" href="#s6" aria-label="链接到本节">#</a></h2>
+<div class="tablewrap"><table class="wide-first">
+<thead>
+<tr>
+<th>现象</th>
+<th>原因与处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>stat -fc %T /sys/fs/cgroup</code> 输出 <code>tmpfs</code></td>
+<td>主机使用 cgroup v1 或混合模式。换一台 Ubuntu 22.04 及以上的主机，或在内核启动参数中加 <code>systemd.unified_cgroup_hierarchy=1</code> 后重启</td>
+</tr>
+<tr>
+<td>Prometheus 启动时报 9090 端口被占用</td>
+<td>换端口（例如 <code>--web.listen-address=127.0.0.1:19090</code>），设置 <code>export PROM=http://127.0.0.1:19090</code>，scaler 加 <code>-prom http://127.0.0.1:19090</code></td>
+</tr>
+<tr>
+<td>scaler 报“需要 root”</td>
+<td>用 <code>sudo</code> 运行 scaler；<code>systemd-run</code> 要在系统实例中创建服务</td>
+</tr>
+<tr>
+<td>scaler 启动时说“停掉上次留下的 lab3-inst-…”</td>
+<td>上一次的 scaler 被强行结束，留下了实例。属于正常，它会先清理</td>
+</tr>
+<tr>
+<td class="nw">实例一直不就绪</td>
+<td><code>curl 127.0.0.1:&lt;端口&gt;/readyz</code> 看是否仍在预热；<code>journalctl -u lab3-inst-&lt;端口&gt;</code> 看实例的日志</td>
+</tr>
+<tr>
+<td><code>instances</code> 目标在 Prometheus 中没有出现</td>
+<td>scaler 尚未启动实例，或 <code>data/targets.json</code> 不存在；Prometheus 要从仓库根目录、用 <code>deploy/prometheus.yml</code> 启动，配置中的路径相对于配置文件</td>
+</tr>
+<tr>
+<td>scaler 的决策中写着“取不到信号”</td>
+<td>信号的 PromQL 返回了空结果或多条序列；在 Prometheus 界面中先试一遍，确认只返回一个数</td>
+</tr>
+<tr>
+<td>实例被杀，但 <code>Result</code> 不是 <code>oom-kill</code></td>
+<td>用 <code>journalctl -u &lt;服务名&gt;</code> 查看原因；<code>MemoryMax</code> 太小时进程可能在启动阶段就被杀</td>
+</tr>
+<tr>
+<td>A3 中实例迟迟不被杀，越来越慢</td>
+<td>没有设 <code>MemorySwapMax=0</code>，超出的内存被换出到 swap</td>
+</tr>
+<tr>
+<td>改完配额，节流计数没有变化</td>
+<td><code>systemctl set-property --runtime</code> 要加服务名 <code>lab3-a</code>；<code>curl -s 127.0.0.1:8081/metrics | grep cgroup_cpu_limit</code> 确认新配额</td>
+</tr>
+<tr>
+<td>loadgen 报“发送滞后”或“压测机 CPU”</td>
+<td>同实验 2：核 0 上的进程太多。4 核以上的主机按第 3 节的分核表分开。2 核的主机在 B 的峰值阶段可能报滞后 p99 约 2 ms，与 200 ms 的缺口阈值相比可以忽略，在第 9 节的局限中写明即可</td>
+</tr>
+<tr>
+<td>结束后还有 lab3 的服务在运行</td>
+<td><code>sudo scripts/cleanup.sh</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="s7"><span class="sec-num">7</span>提交与评分<a class="anchor" href="#s7" aria-label="链接到本节">#</a></h2>
+<p><strong>提交内容：</strong> 小组仓库的地址，以及用于评分的提交的完整提交号（40 位）；按已公布的组号规则写明组号，提交渠道另行通知。截止时刻 2026-11-20 23:59 之前提交的提交号有效，评分只依据该提交中的内容。仓库须保持公开，成绩公布之前不要删除。</p>
+<p><strong>现场检查与答辩：</strong> 合并为一次，安排在截止之后的课外时间，每组约 30 分钟，具体时间另行通知。检查以各组提交的提交号为准，并需使用各组的实验主机，因此检查结束之前不要释放主机，也不要删除 <code>bin/</code>、<code>tools/</code>。</p>
+<ol>
+<li>打开 <code>LAB3.md</code>，老师按其中的表格到 <code>runs/</code> 中抽查若干数值的出处。</li>
+<li>在各组的主机上，重跑老师指定的一项：一次配额实验、一次注入或一次伸缩。结果应与提交的数据处于同一量级，能说明差异的原因即可。</li>
+<li>答辩：小组用约 10 分钟讲述实验 1～3 的主要结论与取舍，以本实验为主；随后回答老师的追问，由老师指定组员回答。追问用于确认实验和分析由小组独立完成；无法回答的，对应的分析题酌情扣分。</li>
+</ol>
+<p><code>LAB3.md</code> 和 <code>runs/</code> 中不得包含密码、密钥和主机的公网 IP。</p>
+<p><strong>评分：</strong> 满分 100 分，选做最多加 10 分，总分超过 100 分的按 100 分计。</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>分值</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="nw">A 配额</td>
+<td class="nw">20</td>
+<td>测量之前写了预测，并与实测对照；A1 的节流计数与算术一致或能解释偏差；<code>throttle_ratio</code> 正确；A2、A3 复现了现象，各有两种改法的数据</td>
+</tr>
+<tr>
+<td class="nw">B 伸缩控制环</td>
+<td class="nw">25</td>
+<td>B0 的能力测量；B1～B3 的数据完整、条件可比；各段延迟的拆分；缺口与实例·分钟的计算</td>
+</tr>
+<tr>
+<td class="nw">C 故障注入</td>
+<td class="nw">15</td>
+<td>C1、C2、C3 的数据齐全；检出时间与参数的对照；离群摘除前后的对照</td>
+</tr>
+<tr>
+<td class="nw">D 发布与自愈</td>
+<td class="nw">15</td>
+<td>两种发布方式的失败请求数与时长；自愈的重启记录；告警查询</td>
+</tr>
+<tr>
+<td class="nw">E 记录与分析</td>
+<td class="nw">25</td>
+<td>数据 5 分：<code>LAB3.md</code> 中的数值均能在 <code>runs/</code> 中找到，相互一致。问题 1～4 各 5 分：判断准确，使用本组数据，阐明机制，写明成立条件</td>
+</tr>
+<tr>
+<td class="nw">选做</td>
+<td class="nw">≤ 10</td>
+<td>O1、O3、O7 各至多 2 分，O2、O4、O5、O6 各至多 3 分</td>
+</tr>
+</tbody>
+</table></div>
+<p>硬性要求：</p>
+<div class="tablewrap"><table class="wide-first">
+<thead>
+<tr>
+<th>要求</th>
+<th>达不到时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>评分用的提交在截止前提交，仓库公开</td>
+<td>无法核对，所有评分项都不得分</td>
+</tr>
+<tr>
+<td><code>LAB3.md</code> 中的数值均能在 <code>runs/</code> 的文件中找到</td>
+<td>找不到出处的数值视为缺少该项数据，其所支撑的评分项不得分</td>
+</tr>
+<tr>
+<td><code>runs/</code> 中的文件是 <code>scripts/run.sh</code>、<code>scripts/run3.sh</code> 生成的原始输出（<code>red.csv</code>、<code>use.csv</code> 可由 <code>scripts/requery.sh</code> 重新生成，<code>summary.md</code> 可由 <code>bin/lab3sum</code> 重新生成）</td>
+<td>数据经过修改的，对应的评分项不得分</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="s8"><span class="sec-num">8</span>恢复与清理<a class="anchor" href="#s8" aria-label="链接到本节">#</a></h2>
+<p>现场检查需在各组的主机上重新运行实验，因此以下清理在检查结束后进行；检查之前只需停止进程。</p>
+<ul>
+<li>停止进程：终端 C 按 Ctrl-C 停止 scaler（它会停掉自己的实例）；终端 B、A 按 Ctrl-C；后台的 node_exporter 用 <code>pkill -x node_exporter</code> 停止。</li>
+<li>清理 systemd 服务：<code>sudo scripts/cleanup.sh</code> 停掉剩下的 <code>lab3-*</code> 服务（包括任务 A 的 <code>lab3-a</code>），并清除失败记录。然后用 <code>systemctl list-units --all 'lab3-*'</code> 确认已经没有。</li>
+<li>删除 Prometheus 数据：<code>rm -rf /dev/shm/lab3-prom</code>。删除前先确认所需的查询结果均已存入 CSV。</li>
+<li>删除数据目录：<code>sudo rm -rf data/</code>（其中有 root 写的实例数据和事件日志）。</li>
+<li>完成 O6 的组：完成后立即删除安全组中为 8080 添加的规则。</li>
+<li><code>runs/</code> 和仓库保留到成绩公布。</li>
+</ul>
+<h2 id="s9"><span class="sec-num">9</span>测量与局限<a class="anchor" href="#s9" aria-label="链接到本节">#</a></h2>
+<ul>
+<li>单机：压测机、负载均衡、伸缩器和全部实例共用一台主机的内核、内存带宽和缓存；绑核与 cgroup 只隔离了 CPU 时间。A2 中实例与 loadgen 共用核 0。</li>
+<li>按比例缩放：0.25 核的实例、几百请求/秒的峰值。结论是机制和比例，不是课堂场景（L-09～L-11）的绝对数字。</li>
+<li>“拉镜像”与预热是模拟的延迟（<code>-pull</code>、<code>-warmup</code>）；真实的启动时间取决于镜像大小、JIT、依赖与缓存。</li>
+<li>实例之间没有共享的下游（选做 O3 的磁盘除外），观察不到 L-11 的“扩上游压垮下游”。</li>
+<li><code>lbd</code>、<code>scaler</code> 简化了生产系统的行为：没有节点伸缩器（选做 O2），没有 HPA 的就绪延迟和 CPU 初始化期等细节（选做 O4），负载均衡只有最基本的健康检查与离群摘除（选做 O5）。</li>
+<li>逐秒的 p99 在低到达率时样本很少（每秒几十个请求时，p99 只取决于最慢的一两个），噪声很大；缺口按“错误或 p99 超过阈值”判断，阈值不同，缺口的长度也不同。</li>
+<li>Prometheus 每 5 秒抓一次实例，信号用 15 秒的窗口计算速率，这两项都计入控制环的指标延迟；它们的取值会改变 B2 的结果。</li>
+<li>云主机的 CPU 受邻居干扰，同一台主机在不同时间测量，相差 10% 以上很常见；需要比较的几次实验应连续进行。</li>
+</ul>
+<h2 id="s10"><span class="sec-num">10</span>参考资料<a class="anchor" href="#s10" aria-label="链接到本节">#</a></h2>
+<ul>
+<li>L-05 第 16、22～25 页；L-08 第 6、10、13、21、31 页；L-09 第 11～14 页；L-10 第 10、16、21 页；L-11 第 10、13、15、17、20 页；L-12 第 8、14、15 页；L-13 第 9～11、13～15 页。</li>
+<li>Linux 内核文档：Control Group v2（<code>cpu.max</code>、<code>cpu.stat</code>、<code>memory.max</code>、<code>memory.swap.max</code>、<code>memory.events</code>）；CFS Bandwidth Control。</li>
+<li>systemd 文档：systemd-run(1)；systemd.resource-control(5)（<code>CPUQuota=</code>、<code>MemoryMax=</code>、<code>MemorySwapMax=</code>、<code>AllowedCPUs=</code>）；systemd.service(5)（<code>Restart=</code>、<code>RestartSec=</code>）；systemctl(1)（<code>set-property</code>、<code>kill</code>、<code>show</code>）。</li>
+<li>Go 文档：runtime 包（GOMAXPROCS 的默认值与 cgroup 的 CPU 限额）；Go 1.25 Release Notes；A Guide to the Go Garbage Collector（GOGC、GOMEMLIMIT）。</li>
+<li>Kubernetes 文档：Horizontal Pod Autoscaling；Liveness, Readiness and Startup Probes。</li>
+<li>Prometheus 文档：file_sd_config；Querying functions（<code>rate</code>、<code>changes</code>、<code>histogram_quantile</code>）。</li>
+<li>Google SRE Book：Ch. 1 Introduction（Change Management）；Ch. 22 Addressing Cascading Failures。</li>
+</ul>
+    </main>
+  </div>
+  <footer>
+    <span>互联网产品开发与运维（2026 秋季） · 实验 3</span>
+    <span>本页由 guide.md 生成，内容以课程平台发布的版本为准</span>
+  </footer>
+</div>
+<script>
+(function () {
+  "use strict";
+
+  // 窄屏时目录默认折叠
+  var toc = document.querySelector("details.toc-wrap");
+  if (toc && window.matchMedia("(max-width: 979px)").matches) { toc.removeAttribute("open"); }
+
+  // 代码块复制
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("figure.code .copy"), function (btn) {
+    btn.addEventListener("click", function () {
+      var code = btn.closest("figure").querySelector("code");
+      var text = code.textContent;
+      var done = function (ok) {
+        btn.textContent = ok ? "已复制" : "复制失败";
+        btn.classList.toggle("done", ok);
+        setTimeout(function () { btn.textContent = "复制"; btn.classList.remove("done"); }, 1600);
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(fallbackCopy(text)); });
+      } else { done(fallbackCopy(text)); }
+    });
+  });
+
+  // 目录跟随滚动高亮
+  var links = {};
+  Array.prototype.forEach.call(document.querySelectorAll(".toc a"), function (a) {
+    links[decodeURIComponent(a.getAttribute("href").slice(1))] = a;
+  });
+  var heads = Array.prototype.slice.call(document.querySelectorAll("main h2[id], main h3[id]"));
+  var ticking = false;
+  function update() {
+    ticking = false;
+    var y = 90, current = null;
+    for (var i = 0; i < heads.length; i++) {
+      if (heads[i].getBoundingClientRect().top <= y) { current = heads[i]; } else { break; }
+    }
+    if (!current && heads.length) { current = heads[0]; }
+    Object.keys(links).forEach(function (id) {
+      var on = current && current.id === id;
+      links[id].classList.toggle("active", !!on);
+      if (on) { links[id].setAttribute("aria-current", "location"); } else { links[id].removeAttribute("aria-current"); }
+    });
+  }
+  window.addEventListener("scroll", function () {
+    if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+  }, { passive: true });
+  window.addEventListener("resize", update);
+  update();
+})();
+</script>
+</body>
+</html>

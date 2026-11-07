@@ -3,6 +3,7 @@
 // 实例：用 systemd-run 启动的临时服务 lab3-inst-<端口>，每个一个 cgroup（-quota、-memory、-cpus）；
 // 同时设 MemorySwapMax=0，内存超限时直接被杀，而不是换出到 swap 里慢慢变慢。
 // 新建一个实例要经过：创建（模拟拉镜像 -pull）→ 启动（进程起来，预热中）→ 就绪（lbd 的健康检查连续成功）。
+// 选做 O2 可用 -wait-node：已有空位用完后，先等 -node-delay 模拟新节点就绪，再进入原来的拉镜像阶段。
 // 只有就绪的实例才分到流量；控制环的延迟就是这几段加上指标延迟与等待决策的时间（L-11 第 10 页）。
 //
 // 两种模式：
@@ -57,6 +58,9 @@ type options struct {
 	DownWindow string  `json:"down_window"`
 	Schedule   string  `json:"schedule"`
 	Pull       string  `json:"pull"`
+	WaitNode   bool    `json:"wait_node"`
+	NodeSlots  int     `json:"node_slots"`
+	NodeDelay  string  `json:"node_delay"`
 	Quota      int     `json:"quota_percent"`
 	QuotaPer   string  `json:"quota_period"`
 	Memory     string  `json:"memory"`
@@ -73,8 +77,8 @@ type options struct {
 	Admin      string  `json:"admin"`
 	Started    string  `json:"started"`
 
-	sync, downWindow, pull time.Duration
-	schedule               []schedEntry
+	sync, downWindow, pull, nodeDelay time.Duration
+	schedule                          []schedEntry
 }
 
 type schedEntry struct {
@@ -84,10 +88,11 @@ type schedEntry struct {
 
 // 实例的状态
 const (
-	stPulling  = "pulling"  // 已创建，模拟拉镜像
-	stStarting = "starting" // 进程已启动，等就绪
-	stReady    = "ready"    // lbd 判为健康，接流量
-	stStopping = "stopping" // 排空、停止中
+	stWaitingNode = "waiting-node" // 空位不足，模拟等待新节点
+	stPulling     = "pulling"      // 已创建，模拟拉镜像
+	stStarting    = "starting"     // 进程已启动，等就绪
+	stReady       = "ready"        // lbd 判为健康，接流量
+	stStopping    = "stopping"     // 排空、停止中
 )
 
 type instance struct {
@@ -97,6 +102,7 @@ type instance struct {
 	version   string
 	state     string
 	created   time.Time
+	nodeUntil time.Time
 	pullUntil time.Time
 	assumeUp  bool // 登记到 lbd 时直接视为健康（任务 D1 的“直接替换”）
 	restarts  int
@@ -107,8 +113,9 @@ type scaler struct {
 	opt   options
 	mu    sync.Mutex
 	insts []*instance
-	hist  []histEntry // 最近的期望数，用于缩容的稳定窗口
-	busy  bool        // 正在滚动发布，暂停决策
+	hist  []histEntry       // 最近的期望数，用于缩容的稳定窗口
+	busy  bool              // 正在滚动发布，暂停决策
+	nodes map[int]time.Time // 每批新增空位的就绪时刻；同批实例共用一次节点等待
 
 	runStart time.Time
 	runMtime time.Time
@@ -135,6 +142,9 @@ func main() {
 	flag.DurationVar(&o.downWindow, "down-window", 300*time.Second, "缩容稳定窗口（HPA 默认 300 s）")
 	flag.StringVar(&o.Schedule, "schedule", "", "定时表：负载开始后多久把最少实例数调到几，例如 +20s=4,+400s=2")
 	flag.DurationVar(&o.pull, "pull", 20*time.Second, "模拟拉镜像的时间：创建实例后等这么久才启动进程")
+	flag.BoolVar(&o.WaitNode, "wait-node", false, "选做 O2：现有实例空位用完后，先等待新节点；默认关闭，不影响任务 B")
+	flag.IntVar(&o.NodeSlots, "node-slots", 2, "选做 O2：每批节点可提供的实例空位数；开启 -wait-node 时，初始有这么多个空位")
+	flag.DurationVar(&o.nodeDelay, "node-delay", 240*time.Second, "选做 O2：新增一批空位需要等待的时间")
 	flag.IntVar(&o.Quota, "quota", 25, "每个实例的 CPU 配额（%，100 表示一个核）")
 	flag.StringVar(&o.QuotaPer, "quota-period", "", "配额周期（systemd 的 CPUQuotaPeriodSec，例如 10ms）；空表示内核默认的 100 ms")
 	flag.StringVar(&o.Memory, "memory", "128M", "每个实例的内存上限（MemoryMax）")
@@ -150,7 +160,7 @@ func main() {
 	flag.StringVar(&o.Prom, "prom", "http://127.0.0.1:9090", "Prometheus 的地址")
 	flag.StringVar(&o.Admin, "admin", "127.0.0.1:8091", "scaler 自己的管理接口")
 	flag.Parse()
-	o.Sync, o.DownWindow, o.Pull = o.sync.String(), o.downWindow.String(), o.pull.String()
+	o.Sync, o.DownWindow, o.Pull, o.NodeDelay = o.sync.String(), o.downWindow.String(), o.pull.String(), o.nodeDelay.String()
 	o.Started = time.Now().Format(time.RFC3339)
 	if err := o.check(); err != nil {
 		log.Fatal(err)
@@ -198,6 +208,9 @@ func (o *options) check() error {
 	}
 	if o.Quota < 1 {
 		return errors.New("-quota 至少为 1（%）")
+	}
+	if o.NodeSlots < 1 || o.nodeDelay < 0 {
+		return errors.New("-node-slots 至少为 1，-node-delay 不能为负")
 	}
 	sched, err := parseSchedule(o.Schedule)
 	if err != nil {
@@ -297,14 +310,18 @@ func newScaler(o options) (*scaler, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &scaler{opt: o, decLog: dl, instLog: il, http: &http.Client{Timeout: 3 * time.Second}}, nil
+	return &scaler{opt: o, decLog: dl, instLog: il, nodes: make(map[int]time.Time), http: &http.Client{Timeout: 3 * time.Second}}, nil
 }
 
 func (s *scaler) describe() string {
-	if s.opt.Mode == "fixed" {
-		return fmt.Sprintf("固定 %d 个实例", s.opt.Replicas)
+	node := ""
+	if s.opt.WaitNode {
+		node = fmt.Sprintf("，初始 %d 个空位，新增空位等 %v", s.opt.NodeSlots, s.opt.nodeDelay)
 	}
-	return fmt.Sprintf("按信号伸缩，目标 %g，%d～%d 个，定时表 %q", s.opt.Target, s.opt.Min, s.opt.Max, s.opt.Schedule)
+	if s.opt.Mode == "fixed" {
+		return fmt.Sprintf("固定 %d 个实例%s", s.opt.Replicas, node)
+	}
+	return fmt.Sprintf("按信号伸缩，目标 %g，%d～%d 个，定时表 %q%s", s.opt.Target, s.opt.Min, s.opt.Max, s.opt.Schedule, node)
 }
 
 func (s *scaler) tRun(now time.Time) string {
@@ -363,6 +380,10 @@ func (s *scaler) reconcile() {
 	now := time.Now()
 	for _, in := range s.insts {
 		switch in.state {
+		case stWaitingNode:
+			if !now.Before(in.nodeUntil) {
+				s.finishNodeWait(in, now)
+			}
 		case stPulling:
 			if !now.Before(in.pullUntil) {
 				if err := s.startUnit(in); err != nil {
@@ -419,6 +440,13 @@ func (s *scaler) reconcile() {
 	if changed {
 		s.writeTargets()
 	}
+}
+
+// finishNodeWait 只结束节点等待；拉镜像从节点可用以后另计 -pull。
+func (s *scaler) finishNodeWait(in *instance, now time.Time) {
+	in.state = stPulling
+	in.pullUntil = now.Add(s.opt.pull)
+	s.logInst(in, "node-ready", "新增节点可用，开始模拟拉镜像")
 }
 
 func (s *scaler) activeCount() int {
@@ -495,7 +523,7 @@ func (s *scaler) decide() {
 
 // pickVictim 选一个要缩掉的实例：先缩还没就绪的、后创建的。调用者持有锁。
 func (s *scaler) pickVictim() *instance {
-	rank := map[string]int{stPulling: 0, stStarting: 1, stReady: 2}
+	rank := map[string]int{stWaitingNode: 0, stPulling: 1, stStarting: 2, stReady: 3}
 	var best *instance
 	for _, in := range s.insts {
 		if in.state == stStopping {
@@ -520,8 +548,25 @@ func (s *scaler) create(version string, assumeUp bool, why string) *instance {
 	now := time.Now()
 	in := &instance{port: port, addr: "127.0.0.1:" + strconv.Itoa(port), unit: fmt.Sprintf("lab3-inst-%d", port),
 		version: version, state: stPulling, created: now, pullUntil: now.Add(s.opt.pull), assumeUp: assumeUp}
+	if s.opt.WaitNode && s.activeCount() >= s.opt.NodeSlots {
+		batch := s.activeCount() / s.opt.NodeSlots
+		if s.nodes == nil {
+			s.nodes = make(map[int]time.Time)
+		}
+		until, ok := s.nodes[batch]
+		if !ok {
+			until = now.Add(s.opt.nodeDelay)
+			s.nodes[batch] = until
+		}
+		if now.Before(until) {
+			in.state, in.nodeUntil, in.pullUntil = stWaitingNode, until, time.Time{}
+		}
+	}
 	s.insts = append(s.insts, in)
 	s.logInst(in, "created", why)
+	if in.state == stWaitingNode {
+		s.logInst(in, "node-wait", fmt.Sprintf("现有空位已满，等到 %s 后拉镜像", in.nodeUntil.Format(time.RFC3339)))
+	}
 	return in
 }
 
@@ -566,12 +611,16 @@ func (s *scaler) startUnit(in *instance) error {
 // retire 停掉一个实例。graceful 为真时先在 lbd 里排空、等在途请求做完，再 SIGTERM；否则直接 SIGKILL。
 func (s *scaler) retire(in *instance, graceful bool) {
 	s.mu.Lock()
+	pending := in.state == stWaitingNode || (in.state == stPulling && in.pullUntil.After(time.Now()) && in.restarts == 0)
 	in.state = stStopping
-	pulling := in.pullUntil.After(time.Now()) && in.restarts == 0
 	s.mu.Unlock()
-	if pulling && unitState(in.unit).active == "" {
+	if pending && unitState(in.unit).active == "" {
 		s.mu.Lock()
-		s.logInst(in, "stopped", "还在拉镜像，直接取消")
+		detail := "还在拉镜像，直接取消"
+		if in.nodeUntil.After(time.Now()) {
+			detail = "还在等节点，直接取消"
+		}
+		s.logInst(in, "stopped", detail)
 		s.forget(in)
 		s.mu.Unlock()
 		return
@@ -628,7 +677,11 @@ func (s *scaler) rollout(version, mode string) {
 			s.mu.Lock()
 			nw := s.create(version, false, "滚动发布")
 			s.mu.Unlock()
-			deadline := time.Now().Add(5 * time.Minute)
+			wait := time.Duration(0)
+			if s.opt.WaitNode {
+				wait = s.opt.nodeDelay
+			}
+			deadline := time.Now().Add(5*time.Minute + wait)
 			for time.Now().Before(deadline) {
 				s.mu.Lock()
 				ok := nw.state == stReady
@@ -876,7 +929,7 @@ func (s *scaler) writeTargets() {
 	s.mu.Lock()
 	targets := []string{}
 	for _, in := range s.insts {
-		if in.state != stPulling {
+		if in.state != stWaitingNode && in.state != stPulling {
 			targets = append(targets, in.addr)
 		}
 	}

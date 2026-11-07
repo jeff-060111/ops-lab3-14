@@ -76,3 +76,31 @@ func TestMarksWindowAndAll(t *testing.T) {
 		t.Errorf("负载开始以前的注入不应列出：\n%s", out)
 	}
 }
+
+func TestNodeWaitIsSeparateFromImagePull(t *testing.T) {
+	dir := t.TempDir()
+	write := func(name, body string) {
+		t.Helper()
+		if err := os.WriteFile(filepath.Join(dir, name), []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	write("timeline.csv", "sec,unix,sent,ok,errors,slow,p50_ms,p99_ms,max_ms\n"+
+		"0,1000,1,1,0,0,5,5,5\n1,1001,1,1,0,0,5,5,5\n2,1002,1,1,0,0,5,5,5\n"+
+		"3,1003,1,1,0,0,5,5,5\n4,1004,1,1,0,0,5,5,5\n5,1005,1,1,0,0,5,5,5\n")
+	write("instances.csv", "unix_ms,time,t_run,instance,version,event,detail\n"+
+		"1001000,,,127.0.0.1:8103,v1,created,扩容\n"+
+		"1001000,,,127.0.0.1:8103,v1,node-wait,等待节点\n"+
+		"1003000,,,127.0.0.1:8103,v1,node-ready,节点可用\n"+
+		"1003500,,,127.0.0.1:8103,v1,started,预热中\n"+
+		"1005000,,,127.0.0.1:8103,v1,ready,健康\n")
+	var b strings.Builder
+	if err := summarize(&b, dir, 0.2); err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"| 等节点 s | 拉镜像 s |", "| 127.0.0.1:8103 | v1 | 1.0 | 3.0 | 3.5 | 5.0 | - | 2.0 | 0.5 | 1.5 | 4.0 | 0 |"} {
+		if !strings.Contains(b.String(), want) {
+			t.Errorf("汇总未区分节点等待与拉镜像，缺少 %q：\n%s", want, b.String())
+		}
+	}
+}
