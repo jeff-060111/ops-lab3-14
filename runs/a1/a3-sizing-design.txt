@@ -1,0 +1,2 @@
+2026-11-09T14:56:24+08:00
+a3-oom died early in target=20 stage, so the normal 15s Prometheus stage window is empty. Use an additional MemoryMax=512M sizing run at identical 10,20,30 rates to measure an uncensored target=20 report_inflight_max before choosing the final limit.

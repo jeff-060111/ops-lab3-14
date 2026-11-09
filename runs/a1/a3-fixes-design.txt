@@ -1,0 +1,3 @@
+2026-11-09T14:58:13+08:00
+Sizing at R=20: report_inflight_max=14; idle RSS=9052160/1048576=8.6328125 MiB; naive GC budget=14*8*2+8.6328125=232.6328125 MiB. Observed RSS=298.875 MiB, cgroup peak=294.63671875 MiB; use max(232.6328125,298.875,294.63671875)*1.1=328.7625 MiB, round up to MemoryMax=336M. Target is R=20; R=30 is an extra stress stage, not guaranteed.
+Bounded concurrency: report-max=8; 8*8*2+8.6328125=136.6328125 MiB < 200 MiB; conservative spare 63.3671875 MiB covers sampled-peak/GC/runtime uncertainty. Ideal admitted throughput <=8/0.5=16 requests/s, so expect 503 above capacity and possible rejects even at R=10 due to Poisson bursts.

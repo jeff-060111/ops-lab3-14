@@ -1,0 +1,8 @@
+2026-11-09T14:51:57+08:00
+R=94; q100 stage CPU=0.411707,0.371858 cores; max stage mean / 0.7 = 0.588153 cores; choose CPUQuota=60%.
+MainPID=1357330
+CPUQuotaPerSecUSec=1s
+CPUQuotaPeriodUSec=infinity
+MemoryMax=268435456
+MainPID=1357330
+CPUQuotaPerSecUSec=500ms

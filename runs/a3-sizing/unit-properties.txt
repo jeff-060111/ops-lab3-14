@@ -1,0 +1,5 @@
+MainPID=1360768
+CPUQuotaPerSecUSec=infinity
+MemoryMax=536870912
+MemorySwapMax=0
+Environment=

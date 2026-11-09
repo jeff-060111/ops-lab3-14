@@ -1,0 +1,100 @@
+2026-11-09T14:49:36+08:00
+Linux ops-lab1-main 6.8.0-136-generic #136-Ubuntu SMP PREEMPT_DYNAMIC Wed Jul  1 21:53:05 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Address sizes:                           42 bits physical, 48 bits virtual
+Byte Order:                              Little Endian
+CPU(s):                                  4
+On-line CPU(s) list:                     0-3
+Vendor ID:                               GenuineIntel
+BIOS Vendor ID:                          QEMU
+Model name:                              General Purpose Processor
+BIOS Model name:                         pc-i440fx-4.1  CPU @ 2.0GHz
+BIOS CPU family:                         1
+CPU family:                              6
+Model:                                   106
+Thread(s) per core:                      2
+Core(s) per socket:                      2
+Socket(s):                               1
+Stepping:                                6
+BogoMIPS:                                5599.99
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch cpuid_fault ssbd ibrs ibpb stibp ibrs_enhanced fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves wbnoinvd arat avx512vbmi umip avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq fsrm md_clear arch_capabilities
+Hypervisor vendor:                       KVM
+Virtualization type:                     full
+L1d cache:                               96 KiB (2 instances)
+L1i cache:                               64 KiB (2 instances)
+L2 cache:                                2.5 MiB (2 instances)
+L3 cache:                                57 MiB (1 instance)
+NUMA node(s):                            1
+NUMA node0 CPU(s):                       0-3
+Vulnerability Gather data sampling:      Unknown: Dependent on hypervisor status
+Vulnerability Indirect target selection: Mitigation; Aligned branch/return thunks
+Vulnerability Itlb multihit:             Not affected
+Vulnerability L1tf:                      Not affected
+Vulnerability Mds:                       Not affected
+Vulnerability Meltdown:                  Not affected
+Vulnerability Mmio stale data:           Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown
+Vulnerability Reg file data sampling:    Not affected
+Vulnerability Retbleed:                  Not affected
+Vulnerability Spec rstack overflow:      Not affected
+Vulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:                Mitigation; Enhanced / Automatic IBRS; IBPB conditional; PBRSB-eIBRS SW sequence; BHI SW loop, KVM SW loop
+Vulnerability Srbds:                     Not affected
+Vulnerability Tsa:                       Not affected
+Vulnerability Tsx async abort:           Not affected
+Vulnerability Vmscape:                   Not affected
+               total        used        free      shared  buff/cache   available
+Mem:            7556        1831         704         248        5576        5725
+Swap:              0           0           0
+systemd 255 (255.4-1ubuntu8.16)
+Usage of bin/enrolld:
+  -addr string
+    	监听地址；实例由 scaler 启动时用 127.0.0.1:81xx (default "127.0.0.1:8081")
+  -bench-fsync int
+    	不启动服务，只在数据目录里做 N 次“追加 + fsync”并打印耗时分布
+  -burn int
+    	不启动服务，只让 N 个线程忙 -for 这么久，打印 cgroup 的节流计数（任务 A1）
+  -data string
+    	数据目录，必须在真实的磁盘上（不能是 tmpfs） (default "data")
+  -db-ms float
+    	每次查询占用一个连接的时间（毫秒） (default 2)
+  -drain-delay duration
+    	收到 SIGTERM 后，先报未就绪、继续服务这么久，再停止接收新请求 (default 2s)
+  -for duration
+    	-burn 的时长 (default 10s)
+  -leak-kb int
+    	每个读请求泄漏这么多 KB 内存（永不释放），任务 D2 用；0 表示不泄漏
+  -pool int
+    	数据库连接池大小 (default 32)
+  -pool-timeout duration
+    	等连接的最长时间，超过返回 503 (default 1s)
+  -report-max int
+    	/api/report 同时处理的上限，超出的立即返回 503；0 表示不限
+  -sync string
+    	写路径落盘方式：each 每笔 fsync；group 组提交；interval 定期 fsync (default "each")
+  -sync-interval duration
+    	-sync interval 时多久 fsync 一次 (default 1s)
+  -version string
+    	版本标签：写进 enrolld_info 和响应头 X-Version，任务 D1 的滚动发布用 (default "v1")
+  -warmup duration
+    	预热时长：启动后这么久之内未就绪，业务接口返回 503
+  -work int
+    	每个读请求的计算量（循环次数，固定不变） (default 200000)
+pid 504099's current affinity list: 0,1
+    PID %CPU COMMAND
+1357353  4.5 sshd
+1351923  0.4 MainThread
+   1512  0.4 ebpfagent
+1903971  0.3 redis-server
+ 504099  0.2 prometheus
+1915165  0.2 uvicorn
+    928  0.2 [oom_reaper]
+1905081  0.2 prometheus
+1245688  0.2 telescope
+1357143  0.1 node_exporter
+1351894  0.1 MainThread
+     17  0.1 rcu_preempt
+1351987  0.0 MainThread
+1902270  0.0 containerd
+{"status":"success","data":{"activeTargets":[{"discoveredLabels":{"__address__":"127.0.0.1:8081","__always_scrape_classic_histograms__":"false","__convert_classic_histograms_to_nhcb__":"false","__metrics_path__":"/metrics","__scheme__":"http","__scrape_interval__":"1s","__scrape_native_histograms__":"false","__scrape_timeout__":"1s","job":"enrolld"},"labels":{"instance":"127.0.0.1:8081","job":"enrolld"},"scrapePool":"enrolld","scrapeUrl":"http://127.0.0.1:8081/metrics","globalUrl":"http://ops-lab1-main:8081/metrics","lastError":"","lastScrape":"2026-11-09T14:49:35.719534291+08:00","lastScrapeDuration":0.001098397,"health":"up","scrapeInterval":"1s","scrapeTimeout":"1s"},{"discoveredLabels":{"__address__":"127.0.0.1:8090","__always_scrape_classic_histograms__":"false","__convert_classic_histograms_to_nhcb__":"false","__metrics_path__":"/metrics","__scheme__":"http","__scrape_interval__":"1s","__scrape_native_histograms__":"false","__scrape_timeout__":"1s","job":"lbd"},"labels":{"instance":"127.0.0.1:8090","job":"lbd"},"scrapePool":"lbd","scrapeUrl":"http://127.0.0.1:8090/metrics","globalUrl":"http://ops-lab1-main:8090/metrics","lastError":"Get \"http://127.0.0.1:8090/metrics\": dial tcp 127.0.0.1:8090: connect: connection refused","lastScrape":"2026-11-09T14:49:36.424384042+08:00","lastScrapeDuration":0.000301083,"health":"down","scrapeInterval":"1s","scrapeTimeout":"1s"},{"discoveredLabels":{"__address__":"127.0.0.1:9100","__always_scrape_classic_histograms__":"false","__convert_classic_histograms_to_nhcb__":"false","__metrics_path__":"/metrics","__scheme__":"http","__scrape_interval__":"5s","__scrape_native_histograms__":"false","__scrape_timeout__":"5s","job":"node"},"labels":{"instance":"127.0.0.1:9100","job":"node"},"scrapePool":"node","scrapeUrl":"http://127.0.0.1:9100/metrics","globalUrl":"http://ops-lab1-main:9100/metrics","lastError":"","lastScrape":"2026-11-09T14:49:33.830329239+08:00","lastScrapeDuration":0.01149992,"health":"up","scrapeInterval":"5s","scrapeTimeout":"5s"}],"droppedTargets":[],"droppedTargetCounts":{"enrolld":0,"instances":0,"lbd":0,"node":0}}}

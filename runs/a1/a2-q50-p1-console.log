@@ -1,0 +1,21 @@
+警告：loadgen（GEN_CPUS=0-1）和 enrolld（0-3）共用了核 0，结果会互相干扰
+警告：loadgen（GEN_CPUS=0-1）和 enrolld（0-3）共用了核 1，结果会互相干扰
+== loadgen（结果写进 runs/a2-q50-p1/）
+loadgen：GET http://127.0.0.1:8081/api/courses/1，2 个阶段共 40s，到达过程 poisson，超时 2s，GOMAXPROCS=2
+阶段 1/2：目标 94 请求/秒，已发出 1934，已成功 1932，在途 2，压测机 CPU 2%
+阶段 2/2：目标 94 请求/秒，已发出 1823，已成功 1820，在途 3，压测机 CPU 2%
+等待在途的 3 个请求结束（最多 2s）…
+step  target_rps  sent    ok  error_rate  mean_ms  p50_ms  p99_ms  max_ms  slo_good  lag_p99_ms  gen_cpu_pct  
+   1          94  1934  1934      0.0000    10.32    8.48   42.75   94.89    0.9938        1.05            2  
+   2          94  1823  1823      0.0000     9.64    8.41   37.11   75.56    0.9973        1.07            2  
+ all              3757  3757      0.0000     9.99    8.44   40.78   94.89    0.9955        1.06            2  
+== 按阶段查询 Prometheus
+-- red.csv
+step  target_rps  server_rps  server_error_rate  server_p99_ms  server_mean_ms  inflight_avg  cpu_ms_per_req  sched_wait_p99_ms  gomaxprocs  cg_limit_cores  cg_cpu_cores  throttle_ratio  throttled_s_per_s  mem_limit_mb  mem_current_max_mb  rss_max_mb  heap_max_mb  report_inflight_max  gc_per_s
+1     94          99          0                  41.3           7.8293          0.533333      4.03679         20.72              1           0.5             0.399651      0.285714        0.0470084          256           7.0625              12.2305     3.28278      0                    0.13601
+2     94          88.7143     0                  16.8909        7.23239         0.333333      4.06879         9.2431             1           0.5             0.360959      0.0857143       0.0169597          256           7.28906             12.4219     3.37689      0                    0.142857
+-- use.csv
+step  target_rps  svc_cpu_busy  all_cpu_busy  cpu_steal  cpu_iowait  procs_running_avg  cpu_psi_some  mem_available_min_mb  swap_in_per_s  disk_w_per_s  disk_wkb_per_s  disk_w_await_ms  disk_f_per_s  disk_f_await_ms  disk_aqu_sz  disk_util
+1     94          0.12275       0.12275       0          0.0005      1.66667            0.0408155     5712.84               0              22.5          112.8           0.631111         0.4           0                0.0142       0.002
+2     94          0.1115        0.1115        0          0           1                  0.0145578     5710.43               0              2.7           21.2            0.518519         0.4           0                0.0013       0.0002
+完成：runs/a2-q50-p1

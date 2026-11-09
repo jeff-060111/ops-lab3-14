@@ -1,0 +1,21 @@
+警告：loadgen（GEN_CPUS=0-1）和 enrolld（0-3）共用了核 0，结果会互相干扰
+警告：loadgen（GEN_CPUS=0-1）和 enrolld（0-3）共用了核 1，结果会互相干扰
+== loadgen（结果写进 runs/a2-base/）
+loadgen：GET http://127.0.0.1:8081/api/courses/1，2 个阶段共 40s，到达过程 poisson，超时 2s，GOMAXPROCS=2
+阶段 1/2：目标 30 请求/秒，已发出 575，已成功 574，在途 1，压测机 CPU 1%
+阶段 2/2：目标 60 请求/秒，已发出 1270，已成功 1270，在途 0，压测机 CPU 2%
+等待在途的 0 个请求结束（最多 2s）…
+step  target_rps  sent    ok  error_rate  mean_ms  p50_ms  p99_ms  max_ms  slo_good  lag_p99_ms  gen_cpu_pct  
+   1          30   575   575      0.0000     6.86    6.87    7.51    7.67    1.0000        1.07            1  
+   2          60  1270  1270      0.0000     6.98    6.88    9.93   13.11    1.0000        1.08            2  
+ all              1845  1845      0.0000     6.94    6.87    9.71   13.11    1.0000        1.07            1  
+== 按阶段查询 Prometheus
+-- red.csv
+step  target_rps  server_rps  server_error_rate  server_p99_ms  server_mean_ms  inflight_avg  cpu_ms_per_req  sched_wait_p99_ms  gomaxprocs  cg_limit_cores  cg_cpu_cores  throttle_ratio  throttled_s_per_s  mem_limit_mb  mem_current_max_mb  rss_max_mb  heap_max_mb  report_inflight_max  gc_per_s
+1     30          29.3571     0                  9.95           6.06054         0             4.35209         3.94               2           1               0.127764      0               0                  256           6.17188             11.25       2.62273      0                    0.0680048
+2     60          63.2857     0                  9.96682        6.14215         0.466667      4.23883         4.42382            2           1               0.26826       0               0                  256           7.62109             12.7109     3.17704      0                    0.0714286
+-- use.csv
+step  target_rps  svc_cpu_busy  all_cpu_busy  cpu_steal  cpu_iowait  procs_running_avg  cpu_psi_some  mem_available_min_mb  swap_in_per_s  disk_w_per_s  disk_wkb_per_s  disk_w_await_ms  disk_f_per_s  disk_f_await_ms  disk_aqu_sz  disk_util
+1     30          0.045         0.045         0          0.00025     1.66667            0.0037869     5721.33               0              5.8           32.8            0.534483         0.4           0                0.0032       0.0004
+2     60          0.09175       0.09175       0          0.0005      1                  0.0121811     5722.43               0              23.9          128             0.899582         0.4           0                0.0214       0.003
+完成：runs/a2-base
