@@ -1,0 +1,23 @@
+2026-11-09T14:59:19+08:00
+Result=oom-kill
+ExecMainStatus=9
+ActiveState=failed
+Nov 09 14:58:15 ops-lab1-main enrolld[1360768]: 2026/11/09 14:58:15 已停止
+Nov 09 14:58:15 ops-lab1-main systemd[1]: lab3-a.service: Deactivated successfully.
+Nov 09 14:58:15 ops-lab1-main systemd[1]: Stopped lab3-a.service - /root/lab3/bin/enrolld -addr 127.0.0.1:8081 -data /root/lab3/data/a -report-max 0.
+Nov 09 14:58:15 ops-lab1-main systemd[1]: lab3-a.service: Consumed 2.290s CPU time, 439.2M memory peak, 0B memory swap peak.
+Nov 09 14:58:15 ops-lab1-main systemd[1]: Started lab3-a.service - /root/lab3/bin/enrolld -addr 127.0.0.1:8081 -data /root/lab3/data/a -report-max 0.
+Nov 09 14:58:15 ops-lab1-main enrolld[1361455]: 2026/11/09 14:58:15 enrolld v1 监听 127.0.0.1:8081；GOMAXPROCS=4；cgroup /sys/fs/cgroup/system.slice/lab3-a.service；预热 0s；读：work=200000、pool=32、db-ms=2；写：sync=each
+Nov 09 14:58:59 ops-lab1-main systemd[1]: lab3-a.service: A process of this unit has been killed by the OOM killer.
+Nov 09 14:58:59 ops-lab1-main systemd[1]: lab3-a.service: Main process exited, code=killed, status=9/KILL
+Nov 09 14:58:59 ops-lab1-main systemd[1]: lab3-a.service: Failed with result 'oom-kill'.
+Nov 09 14:58:59 ops-lab1-main systemd[1]: lab3-a.service: Consumed 1.292s CPU time, 3.5M memory peak, 0B memory swap peak.
+Nov 09 14:58:59 ops-lab1-main kernel: enrolld invoked oom-killer: gfp_mask=0xcc0(GFP_KERNEL), order=0, oom_score_adj=0
+Nov 09 14:58:59 ops-lab1-main kernel:  oom_kill_process+0x118/0x280
+Nov 09 14:58:59 ops-lab1-main kernel: [  pid  ]   uid  tgid total_vm      rss rss_anon rss_file rss_shmem pgtables_bytes swapents oom_score_adj name
+Nov 09 14:58:59 ops-lab1-main kernel: oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=lab3-a.service,mems_allowed=0,oom_memcg=/system.slice/lab3-a.service,task_memcg=/system.slice/lab3-a.service,task=enrolld,pid=1361455,uid=0
+Nov 09 14:58:59 ops-lab1-main kernel: Memory cgroup out of memory: Killed process 1361455 (enrolld) total-vm:1594380kB, anon-rss:342640kB, file-rss:6016kB, shmem-rss:0kB, UID:0 pgtables:776kB oom_score_adj:0
+[Mon Nov  9 14:54:45 2026] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=lab3-a.service,mems_allowed=0,oom_memcg=/system.slice/lab3-a.service,task_memcg=/system.slice/lab3-a.service,task=enrolld,pid=1359884,uid=0
+[Mon Nov  9 14:54:45 2026] Memory cgroup out of memory: Killed process 1359884 (enrolld) total-vm:1463420kB, anon-rss:203808kB, file-rss:6016kB, shmem-rss:0kB, UID:0 pgtables:504kB oom_score_adj:0
+[Mon Nov  9 14:58:45 2026] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=lab3-a.service,mems_allowed=0,oom_memcg=/system.slice/lab3-a.service,task_memcg=/system.slice/lab3-a.service,task=enrolld,pid=1361455,uid=0
+[Mon Nov  9 14:58:45 2026] Memory cgroup out of memory: Killed process 1361455 (enrolld) total-vm:1594380kB, anon-rss:342640kB, file-rss:6016kB, shmem-rss:0kB, UID:0 pgtables:776kB oom_score_adj:0

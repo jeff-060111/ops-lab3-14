@@ -1,0 +1,5 @@
+cgroup：/sys/fs/cgroup/system.slice/run-rd3c7bf3fb1424dd9a23dd4ba7211f6a6.scope
+cpu.max：配额 0.50 核，周期 100ms（每个周期最多 50 ms CPU 时间）
+GOMAXPROCS=2，忙线程 1 个，计数 10.0 秒
+实际用核 0.50；周期 100 个，被节流 100 个（100%）；被停共 5.09 秒（按 CPU 累计）
+每个线程每个周期被停：实测 50.9 ms，算术 50.0 ms
