@@ -1,0 +1,7 @@
+unix_ms,time,backend,event,detail
+1794076245100,02:30:45.100,127.0.0.1:8101,down,"连续失败 3 次：Get ""http://127.0.0.1:8101/readyz"": dial tcp 127.0.0.1:8101: connect: connection refused"
+1794076247120,02:30:47.120,127.0.0.1:8102,down,"连续失败 3 次：Get ""http://127.0.0.1:8102/readyz"": dial tcp 127.0.0.1:8102: connect: connection refused"
+1794076356865,02:32:36.865,127.0.0.1:8101,removed,inflight=0
+1794076356865,02:32:36.865,127.0.0.1:8102,removed,inflight=0
+1794076440554,02:34:00.554,127.0.0.1:8101,added,init=down
+1794076502555,02:35:02.555,127.0.0.1:8101,up,连续成功 2 次

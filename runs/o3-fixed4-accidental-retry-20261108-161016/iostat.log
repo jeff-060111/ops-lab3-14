@@ -1,0 +1,6 @@
+Linux 6.8.0-136-generic (ops-lab1-main) 	11/08/2026 	_x86_64_	(4 CPU)
+
+11/08/2026 04:10:16 PM
+Device            r/s     rkB/s   rrqm/s  %rrqm r_await rareq-sz     w/s     wkB/s   wrqm/s  %wrqm w_await wareq-sz     d/s     dkB/s   drqm/s  %drqm d_await dareq-sz     f/s f_await  aqu-sz  %util
+vda              0.03      1.24     0.00  13.65    0.51    43.23    6.81     52.02     3.75  35.48    0.54     7.64    0.00      0.00     0.00   0.00    0.00     0.00    3.10    0.04    0.00   0.18
+

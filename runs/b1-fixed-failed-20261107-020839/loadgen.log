@@ -1,0 +1,2 @@
+用法：loadgen -url URL (-rates 100,200,400 [-step 30s] | -plan 50@60s,50~600@30s) [-body 模板] [-out steps.csv] [-timeline t.csv]
+缺少 -rates
