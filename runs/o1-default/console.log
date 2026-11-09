@@ -1,0 +1,27 @@
+警告：loadgen（GEN_CPUS=0-1）和 enrolld（0-3）共用了核 0，结果会互相干扰
+警告：loadgen（GEN_CPUS=0-1）和 enrolld（0-3）共用了核 1，结果会互相干扰
+== loadgen（结果写进 runs/o1-default/）
+loadgen：GET http://127.0.0.1:8081/api/report?mb=8&ms=500，3 个阶段共 1m0s，到达过程 poisson，超时 2s，GOMAXPROCS=2
+阶段 1/3：目标 10 请求/秒，已发出 182，已成功 177，在途 5，压测机 CPU 0%
+阶段 2/3：目标 20 请求/秒，已发出 396，已成功 36，在途 0，压测机 CPU 1%
+阶段 3/3：目标 30 请求/秒，已发出 623，已成功 0，在途 0，压测机 CPU 1%
+等待在途的 0 个请求结束（最多 2s）…
+step  target_rps  sent   ok  error_rate  mean_ms  p50_ms  p99_ms  max_ms  slo_good  lag_p99_ms  gen_cpu_pct  
+   1          10   182  182      0.0000   503.00  502.61  505.41  505.57    0.0000        1.08            0  
+   2          20   396   36      0.9091   503.21  502.80  505.42  505.42    0.0000        1.06            1  
+   3          30   623    0      1.0000                                     0.0000        1.06            1  
+ all              1201  218      0.8185   503.03  502.65  505.41  505.57    0.0000        1.06            1  
+curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+警告：结束时取不到 /metrics
+== 按阶段查询 Prometheus
+-- red.csv
+step  target_rps  server_rps  server_error_rate  server_p99_ms  server_mean_ms  inflight_avg  cpu_ms_per_req  sched_wait_p99_ms  gomaxprocs  cg_limit_cores  cg_cpu_cores  throttle_ratio  throttled_s_per_s  mem_limit_mb  mem_current_max_mb  rss_max_mb  heap_max_mb  report_inflight_max  gc_per_s
+1     10          8.5         0                  995            502.006         4.46667       2.64492         0.149333           4           0               0.0224824     NaN             0                  200           149.887             155.137     121.68       8                    1.71429
+2     20          -           -                  -              -               -             -               -                  -           -               -             -               -                  -             -                   -           -            -                    -
+3     30          -           -                  -              -               -             -               -                  -           -               -             -               -                  -             -                   -           -            -                    -
+-- use.csv
+step  target_rps  svc_cpu_busy  all_cpu_busy  cpu_steal  cpu_iowait  procs_running_avg  cpu_psi_some  mem_available_min_mb  swap_in_per_s  disk_w_per_s  disk_wkb_per_s  disk_w_await_ms  disk_f_per_s  disk_f_await_ms  disk_aqu_sz  disk_util
+1     10          0.0185        0.0185        0          0           1                  0.002443      5577.09               0              3.7           22.8            0.513514         0.4           0                0.0019       0.0005
+2     20          0.0115        0.0115        0          0.00075     1                  0.0133789     5713.88               0              27.5          249.6           0.709091         0.4           0                0.0196       0.0031
+3     30          0.011         0.011         0          0           1                  0.0018932     5712.78               0              2.1           21.2            0.619048         0.4           0.25             0.0012       0.0004
+完成：runs/o1-default

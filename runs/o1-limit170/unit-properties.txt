@@ -1,0 +1,7 @@
+Restart=no
+MainPID=1379060
+CPUQuotaPerSecUSec=infinity
+AllowedCPUs=
+MemoryMax=209715200
+MemorySwapMax=0
+Environment=GOGC=100 GOMEMLIMIT=170MiB

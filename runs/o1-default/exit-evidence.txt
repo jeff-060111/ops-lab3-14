@@ -1,0 +1,14 @@
+2026-11-09T16:14:22+08:00
+Result=oom-kill
+NRestarts=0
+ExecMainStatus=9
+MemoryPeak=3747840
+CPUUsageNSec=604534000
+ActiveState=failed
+Nov 09 16:13:17 ops-lab1-main systemd[1]: Started lab3-a.service - /root/lab3/bin/enrolld -addr 127.0.0.1:8081 -data /root/lab3/data/a -report-max 0.
+Nov 09 16:13:17 ops-lab1-main enrolld[1378676]: 2026/11/09 16:13:17 enrolld v1 监听 127.0.0.1:8081；GOMAXPROCS=4；cgroup /sys/fs/cgroup/system.slice/lab3-a.service；预热 0s；读：work=200000、pool=32、db-ms=2；写：sync=each
+Nov 09 16:13:43 ops-lab1-main systemd[1]: lab3-a.service: A process of this unit has been killed by the OOM killer.
+Nov 09 16:13:43 ops-lab1-main systemd[1]: lab3-a.service: Main process exited, code=killed, status=9/KILL
+Nov 09 16:13:43 ops-lab1-main systemd[1]: lab3-a.service: Failed with result 'oom-kill'.
+Nov 09 16:13:43 ops-lab1-main kernel: oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=lab3-a.service,mems_allowed=0,oom_memcg=/system.slice/lab3-a.service,task_memcg=/system.slice/lab3-a.service,task=enrolld,pid=1378676,uid=0
+Nov 09 16:13:43 ops-lab1-main kernel: Memory cgroup out of memory: Killed process 1378676 (enrolld) total-vm:1463484kB, anon-rss:203800kB, file-rss:6016kB, shmem-rss:0kB, UID:0 pgtables:504kB oom_score_adj:0

@@ -1,0 +1,8 @@
+2026-11-09T16:14:25+08:00
+5ca0c2fb4974138135054b8e55a8c9e6abff3415
+9de7e591bda1fa2b6af2040c785cc28d7cd34d50538c5ebb471ba2f6a0a3b4cb  bin/enrolld
+63d9120e30c4d63b8abb2ffb3e3ff676ff3a5fe00517443f43f02bb81bf0be33  bin/loadgen
+9bda69e0bb1dbdd77751f7dc77bb7f21520b6ed53c57a9e0387238a996a1235d  bin/promsteps
+               total        used        free      shared  buff/cache   available
+Mem:            7556        1844         904         249        5364        5712
+Swap:              0           0           0
