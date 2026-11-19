@@ -7,6 +7,7 @@
 #   sudo scripts/inject.sh slow <端口> <配额%>       把一个实例的 CPU 配额临时调低（变慢，进程照常响应健康检查）
 #   sudo scripts/inject.sh restore <端口> <配额%>    把配额调回去
 #   scripts/inject.sh mark <说明>                    只记一笔，不做任何操作
+# Target the main enrolld process: avoids auxiliary-process signal errors on this host.
 set -euo pipefail
 DATA=${DATA:-data}
 die() { echo "inject.sh：$*" >&2; exit 1; }
@@ -29,7 +30,7 @@ case $action in
   kill)
     u=$(unit "${2:-}")
     mark kill "127.0.0.1:$2"
-    systemctl kill --signal=SIGKILL "$u"
+    systemctl kill --kill-whom=main --signal=SIGKILL "$u"
     ;;
   pause)
     secs=${3:-}
@@ -43,9 +44,9 @@ case $action in
       target=127.0.0.1:$2
     fi
     mark pause "$target"
-    for u in "${units[@]}"; do systemctl kill --signal=SIGSTOP "$u"; done
+    for u in "${units[@]}"; do systemctl kill --kill-whom=main --signal=SIGSTOP "$u"; done
     sleep "$secs"
-    for u in "${units[@]}"; do systemctl kill --signal=SIGCONT "$u"; done
+    for u in "${units[@]}"; do systemctl kill --kill-whom=main --signal=SIGCONT "$u"; done
     mark resume "$target"
     ;;
   slow | restore)

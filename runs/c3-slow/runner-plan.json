@@ -1,0 +1,256 @@
+{
+  "mode": "slow",
+  "inputs": {
+    "calibration": {
+      "source": "runs/c1-stop/cpu-before.json",
+      "target": "127.0.0.1:8102",
+      "sample_unix": 1795022878.961,
+      "usage_cores": "0.1105564",
+      "formula": "U / 0.85 * 100; nearest integer percent",
+      "unrounded_quota_percent": "13.00663529411764705882352941",
+      "slow_quota_percent": 13,
+      "normal_quota_percent": 25,
+      "rate": 160,
+      "sha256": {
+        "steps.csv": "5d0d4b74226eef2c4abe9f5c50d0c7391e7aed2ec9cbc6c255bb5de75699a00e",
+        "marks.csv": "f16d3818bd5c3ad761beec6d86b27a057f7513b82276de87cee229be6a5e2371",
+        "cpu-before.json": "ac810a048fbc7e1dc8c90db28355bba33b5305da95291ac1e4eb608b1805d5f1",
+        "meta.txt": "d569451a2afe73154246ceae3e398fcdc23ccdf742c28d00af1658938c3942d8"
+      }
+    },
+    "scaler": {
+      "mode": "fixed",
+      "replicas": 3,
+      "min": 2,
+      "max": 4,
+      "target": 0.7,
+      "tolerance": 0.1,
+      "signal": "",
+      "sync": "15s",
+      "down_window": "5m0s",
+      "schedule": "",
+      "pull": "20s",
+      "wait_node": false,
+      "node_slots": 2,
+      "node_delay": "4m0s",
+      "quota_percent": 25,
+      "quota_period": "",
+      "memory": "128M",
+      "cpus": "2",
+      "restart": "",
+      "bin": "/root/lab3/bin/enrolld",
+      "args": "-warmup 60s -work 1000000",
+      "env": "",
+      "version": "v1",
+      "base_port": 8101,
+      "data": "/root/lab3/data",
+      "lb": "http://127.0.0.1:8090",
+      "prom": "http://127.0.0.1:9090",
+      "admin": "127.0.0.1:8091",
+      "started": "2026-11-19T12:01:31+08:00"
+    },
+    "initial_state": {
+      "instances": [
+        {
+          "addr": "127.0.0.1:8101",
+          "version": "v1",
+          "state": "ready",
+          "created": "12:01:37",
+          "restarts": 0
+        },
+        {
+          "addr": "127.0.0.1:8102",
+          "version": "v1",
+          "state": "ready",
+          "created": "12:01:37",
+          "restarts": 0
+        },
+        {
+          "addr": "127.0.0.1:8103",
+          "version": "v1",
+          "state": "ready",
+          "created": "12:01:37",
+          "restarts": 0
+        }
+      ],
+      "backends": [
+        {
+          "addr": "127.0.0.1:8101",
+          "up": true,
+          "draining": false,
+          "ejected": false,
+          "eligible": true,
+          "inflight": 0,
+          "served": 0
+        },
+        {
+          "addr": "127.0.0.1:8103",
+          "up": true,
+          "draining": false,
+          "ejected": false,
+          "eligible": true,
+          "inflight": 0,
+          "served": 0
+        },
+        {
+          "addr": "127.0.0.1:8102",
+          "up": true,
+          "draining": false,
+          "ejected": false,
+          "eligible": true,
+          "inflight": 0,
+          "served": 0
+        }
+      ]
+    },
+    "resources": {
+      "8101": {
+        "unit": "lab3-inst-8101.service",
+        "pid": 56099,
+        "cgroup": "/system.slice/lab3-inst-8101.service",
+        "quota_percent": 25.0,
+        "cpu.max": "25000 100000\n",
+        "cpu.stat": "usage_usec 76337\nuser_usec 37745\nsystem_usec 38592\ncore_sched.force_idle_usec 0\nnr_periods 116\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n"
+      },
+      "8102": {
+        "unit": "lab3-inst-8102.service",
+        "pid": 56107,
+        "cgroup": "/system.slice/lab3-inst-8102.service",
+        "quota_percent": 25.0,
+        "cpu.max": "25000 100000\n",
+        "cpu.stat": "usage_usec 63180\nuser_usec 25538\nsystem_usec 37642\ncore_sched.force_idle_usec 0\nnr_periods 78\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n"
+      },
+      "8103": {
+        "unit": "lab3-inst-8103.service",
+        "pid": 56112,
+        "cgroup": "/system.slice/lab3-inst-8103.service",
+        "quota_percent": 25.0,
+        "cpu.max": "25000 100000\n",
+        "cpu.stat": "usage_usec 64587\nuser_usec 28587\nsystem_usec 35999\ncore_sched.force_idle_usec 0\nnr_periods 80\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n"
+      }
+    }
+  },
+  "command": [
+    "bash",
+    "scripts/run3.sh",
+    "c3-slow",
+    "-url",
+    "http://127.0.0.1:8080/api/courses/1",
+    "-plan",
+    "160@240s"
+  ],
+  "resources": {
+    "8101": {
+      "unit": "lab3-inst-8101.service",
+      "pid": 56099,
+      "cgroup": "/system.slice/lab3-inst-8101.service",
+      "quota_percent": 25.0,
+      "cpu.max": "25000 100000\n",
+      "cpu.stat": "usage_usec 78819\nuser_usec 38178\nsystem_usec 40641\ncore_sched.force_idle_usec 0\nnr_periods 121\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n"
+    },
+    "8102": {
+      "unit": "lab3-inst-8102.service",
+      "pid": 56107,
+      "cgroup": "/system.slice/lab3-inst-8102.service",
+      "quota_percent": 25.0,
+      "cpu.max": "25000 100000\n",
+      "cpu.stat": "usage_usec 64864\nuser_usec 26642\nsystem_usec 38221\ncore_sched.force_idle_usec 0\nnr_periods 80\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n"
+    },
+    "8103": {
+      "unit": "lab3-inst-8103.service",
+      "pid": 56112,
+      "cgroup": "/system.slice/lab3-inst-8103.service",
+      "quota_percent": 25.0,
+      "cpu.max": "25000 100000\n",
+      "cpu.stat": "usage_usec 66851\nuser_usec 28724\nsystem_usec 38127\ncore_sched.force_idle_usec 0\nnr_periods 84\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n"
+    }
+  },
+  "state": {
+    "instances": [
+      {
+        "addr": "127.0.0.1:8101",
+        "version": "v1",
+        "state": "ready",
+        "created": "12:01:37",
+        "restarts": 0
+      },
+      {
+        "addr": "127.0.0.1:8102",
+        "version": "v1",
+        "state": "ready",
+        "created": "12:01:37",
+        "restarts": 0
+      },
+      {
+        "addr": "127.0.0.1:8103",
+        "version": "v1",
+        "state": "ready",
+        "created": "12:01:37",
+        "restarts": 0
+      }
+    ],
+    "backends": [
+      {
+        "addr": "127.0.0.1:8101",
+        "up": true,
+        "draining": false,
+        "ejected": false,
+        "eligible": true,
+        "inflight": 0,
+        "served": 0
+      },
+      {
+        "addr": "127.0.0.1:8102",
+        "up": true,
+        "draining": false,
+        "ejected": false,
+        "eligible": true,
+        "inflight": 0,
+        "served": 0
+      },
+      {
+        "addr": "127.0.0.1:8103",
+        "up": true,
+        "draining": false,
+        "ejected": false,
+        "eligible": true,
+        "inflight": 0,
+        "served": 0
+      }
+    ]
+  },
+  "lbd_config": {
+    "addr": "127.0.0.1:8080",
+    "admin": "127.0.0.1:8090",
+    "policy": "rr",
+    "check_path": "/readyz",
+    "check_interval": "1s",
+    "check_timeout": "500ms",
+    "fall": 3,
+    "rise": 2,
+    "timeout": "2s",
+    "outlier": false,
+    "outlier_window": "10s",
+    "outlier_factor": 3,
+    "outlier_min_ms": 50,
+    "outlier_min_requests": 50,
+    "outlier_error_rate": 0.2,
+    "outlier_max_frac": 0.34,
+    "outlier_eject": "30s",
+    "events": "data/lbd-events.csv",
+    "started": "2026-11-19T12:05:09+08:00"
+  },
+  "anchor_wall": 1795061116.4937491,
+  "run_start_file": [
+    1067941,
+    1795061116493749224,
+    1795061116493749224,
+    "1795061116"
+  ],
+  "planned_s": {
+    "slow": 60,
+    "restore": 180,
+    "end": 240
+  },
+  "script_sha256": "cb21ebce5eda8e536156c05280def61719d8ff51ebe68d0e9115ae5fd39a95bf"
+}

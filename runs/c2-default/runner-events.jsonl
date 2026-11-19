@@ -1,0 +1,4 @@
+{"time": "2026-11-19T10:38:03.651+08:00", "mode": "default", "action": "load_started", "planned_s": null, "observed_s": 0.005}
+{"time": "2026-11-19T10:38:43.651+08:00", "mode": "default", "action": "inject_begin", "planned_s": 40, "observed_s": 40.0048, "args": ["pause", "all", "2"]}
+{"time": "2026-11-19T10:38:45.698+08:00", "mode": "default", "action": "resumed", "planned_s": 42, "observed_s": 42.0513}
+{"time": "2026-11-19T10:40:05.675+08:00", "mode": "default", "action": "finished", "planned_s": null, "observed_s": 122.0287, "summary": "/root/lab3/runs/c2-default/summary.md"}

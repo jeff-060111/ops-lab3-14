@@ -1,0 +1,4 @@
+{"time": "2026-11-19T10:40:11.811+08:00", "mode": "sensitive", "action": "load_started", "planned_s": null, "observed_s": 0.0059}
+{"time": "2026-11-19T10:40:51.810+08:00", "mode": "sensitive", "action": "inject_begin", "planned_s": 40, "observed_s": 40.0043, "args": ["pause", "all", "2"]}
+{"time": "2026-11-19T10:40:53.857+08:00", "mode": "sensitive", "action": "resumed", "planned_s": 42, "observed_s": 42.0515}
+{"time": "2026-11-19T10:42:13.831+08:00", "mode": "sensitive", "action": "finished", "planned_s": null, "observed_s": 122.0253, "summary": "/root/lab3/runs/c2-sensitive/summary.md"}

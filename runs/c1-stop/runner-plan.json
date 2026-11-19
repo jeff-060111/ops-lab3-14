@@ -1,0 +1,134 @@
+{
+  "command": [
+    "bash",
+    "scripts/run3.sh",
+    "c1-stop",
+    "-url",
+    "http://127.0.0.1:8080/api/courses/1",
+    "-plan",
+    "160@240s"
+  ],
+  "inputs": {
+    "scaler": {
+      "mode": "fixed",
+      "replicas": 3,
+      "min": 2,
+      "max": 4,
+      "target": 0.7,
+      "tolerance": 0.1,
+      "signal": "",
+      "sync": "15s",
+      "down_window": "5m0s",
+      "schedule": "",
+      "pull": "20s",
+      "wait_node": false,
+      "node_slots": 2,
+      "node_delay": "4m0s",
+      "quota_percent": 25,
+      "quota_period": "",
+      "memory": "128M",
+      "cpus": "2",
+      "restart": "",
+      "bin": "/root/lab3/bin/enrolld",
+      "args": "-warmup 60s -work 1000000",
+      "env": "",
+      "version": "v1",
+      "base_port": 8101,
+      "data": "/root/lab3/data",
+      "lb": "http://127.0.0.1:8090",
+      "prom": "http://127.0.0.1:9090",
+      "admin": "127.0.0.1:8091",
+      "started": "2026-11-19T00:28:22+08:00"
+    },
+    "lbd": {
+      "addr": "127.0.0.1:8080",
+      "admin": "127.0.0.1:8090",
+      "policy": "rr",
+      "check_path": "/readyz",
+      "check_interval": "1s",
+      "check_timeout": "500ms",
+      "fall": 3,
+      "rise": 2,
+      "timeout": "2s",
+      "outlier": false,
+      "outlier_window": "10s",
+      "outlier_factor": 3,
+      "outlier_min_ms": 50,
+      "outlier_min_requests": 50,
+      "outlier_error_rate": 0.2,
+      "outlier_max_frac": 0.34,
+      "outlier_eject": "30s",
+      "events": "data/lbd-events.csv",
+      "started": "2026-11-19T00:26:50+08:00"
+    },
+    "backends": [
+      {
+        "addr": "127.0.0.1:8101",
+        "up": true,
+        "draining": false,
+        "ejected": false,
+        "eligible": true,
+        "inflight": 0,
+        "served": 3200
+      },
+      {
+        "addr": "127.0.0.1:8103",
+        "up": true,
+        "draining": false,
+        "ejected": false,
+        "eligible": true,
+        "inflight": 0,
+        "served": 3201
+      },
+      {
+        "addr": "127.0.0.1:8102",
+        "up": true,
+        "draining": false,
+        "ejected": false,
+        "eligible": true,
+        "inflight": 0,
+        "served": 0
+      }
+    ],
+    "instances": [
+      {
+        "addr": "127.0.0.1:8101",
+        "version": "v1",
+        "state": "ready",
+        "created": "00:28:22",
+        "restarts": 0
+      },
+      {
+        "addr": "127.0.0.1:8103",
+        "version": "v1",
+        "state": "ready",
+        "created": "00:28:22",
+        "restarts": 0
+      },
+      {
+        "addr": "127.0.0.1:8102",
+        "version": "v1",
+        "state": "ready",
+        "created": "01:20:55",
+        "restarts": 0
+      }
+    ],
+    "prediction": "预测（C1 之前写）：按 lbd 的参数，一个实例停止或卡住以后多久被判定？其间大约有多少请求出错？测前记录时间：2026-11-19T00:20:39+08:00。本轮固定三个实例，每实例 CPU 配额 25%、绑核 2，恒定负载取 160 请求/秒，正常时每实例约分到 53.3 请求/秒。停止一个实例后，预计 scaler 通过约每秒一次的进程状态检查，在约一秒加处理开销内发现退出，并通知 lbd 删除实例；也可能先由健康检查发现，以事件记录为准。删除前可能有数十个请求失败。补建实例还需拉镜像、预热和健康确认，预计创建到就绪约 84 秒。暂停另一个实例 20 秒时，进程仍存在，预计 scaler 不会因进程退出而补建；lbd 的健康检查因超时并连续失败三次，预计几秒后将其判为不健康。粗略按 2.5～3.5 秒估计，期间约有 160÷3×检出时间，即 133～187 个请求可能失败。恢复进程后，还需连续两次健康检查成功才重新接流量。以上均为测前估计，实际结果与检查相位、调度及在途请求有关。"
+  },
+  "run_start_file": [
+    1067941,
+    1795022833960939900,
+    1795022833960939900,
+    "1795022833"
+  ],
+  "anchor_wall": 1795022833.96094,
+  "anchor_note": "run-start file mtime; close to, not identical to, first request",
+  "planned_actions_s": {
+    "cpu_sample": 45,
+    "kill_8102": 60,
+    "check_replacement": 150,
+    "pause_8103": 160,
+    "resume_8103_approximately": 180
+  },
+  "script_sha256": "93eb34375fa0c4cbf756e03637219a8a7cf480ca9aea1e843579e83ef122bd44"
+}

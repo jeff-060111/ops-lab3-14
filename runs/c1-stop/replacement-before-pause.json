@@ -1,0 +1,54 @@
+{
+  "instances": [
+    {
+      "addr": "127.0.0.1:8101",
+      "version": "v1",
+      "state": "ready",
+      "created": "00:28:22",
+      "restarts": 0
+    },
+    {
+      "addr": "127.0.0.1:8103",
+      "version": "v1",
+      "state": "ready",
+      "created": "00:28:22",
+      "restarts": 0
+    },
+    {
+      "addr": "127.0.0.1:8102",
+      "version": "v1",
+      "state": "ready",
+      "created": "01:28:14",
+      "restarts": 0
+    }
+  ],
+  "backends": [
+    {
+      "addr": "127.0.0.1:8101",
+      "up": true,
+      "draining": false,
+      "ejected": false,
+      "eligible": true,
+      "inflight": 1,
+      "served": 13490
+    },
+    {
+      "addr": "127.0.0.1:8103",
+      "up": true,
+      "draining": false,
+      "ejected": false,
+      "eligible": true,
+      "inflight": 1,
+      "served": 13491
+    },
+    {
+      "addr": "127.0.0.1:8102",
+      "up": true,
+      "draining": false,
+      "ejected": false,
+      "eligible": true,
+      "inflight": 2,
+      "served": 350
+    }
+  ]
+}

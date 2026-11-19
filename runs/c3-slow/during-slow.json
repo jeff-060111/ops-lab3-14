@@ -1,0 +1,83 @@
+{
+  "ready": true,
+  "state": {
+    "instances": [
+      {
+        "addr": "127.0.0.1:8101",
+        "version": "v1",
+        "state": "ready",
+        "created": "12:01:37",
+        "restarts": 0
+      },
+      {
+        "addr": "127.0.0.1:8102",
+        "version": "v1",
+        "state": "ready",
+        "created": "12:01:37",
+        "restarts": 0
+      },
+      {
+        "addr": "127.0.0.1:8103",
+        "version": "v1",
+        "state": "ready",
+        "created": "12:01:37",
+        "restarts": 0
+      }
+    ],
+    "backends": [
+      {
+        "addr": "127.0.0.1:8101",
+        "up": true,
+        "draining": false,
+        "ejected": false,
+        "eligible": true,
+        "inflight": 1,
+        "served": 6441
+      },
+      {
+        "addr": "127.0.0.1:8102",
+        "up": true,
+        "draining": false,
+        "ejected": false,
+        "eligible": true,
+        "inflight": 1,
+        "served": 6441
+      },
+      {
+        "addr": "127.0.0.1:8103",
+        "up": true,
+        "draining": false,
+        "ejected": false,
+        "eligible": true,
+        "inflight": 1,
+        "served": 6441
+      }
+    ]
+  },
+  "resources": {
+    "8101": {
+      "unit": "lab3-inst-8101.service",
+      "pid": 56099,
+      "cgroup": "/system.slice/lab3-inst-8101.service",
+      "quota_percent": 25.0,
+      "cpu.max": "25000 100000\n",
+      "cpu.stat": "usage_usec 13383903\nuser_usec 12974428\nsystem_usec 409475\ncore_sched.force_idle_usec 0\nnr_periods 1321\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n"
+    },
+    "8102": {
+      "unit": "lab3-inst-8102.service",
+      "pid": 56107,
+      "cgroup": "/system.slice/lab3-inst-8102.service",
+      "quota_percent": 13.0,
+      "cpu.max": "13000 100000\n",
+      "cpu.stat": "usage_usec 13406634\nuser_usec 12975246\nsystem_usec 431388\ncore_sched.force_idle_usec 0\nnr_periods 1280\nnr_throttled 185\nthrottled_usec 4186698\nnr_bursts 0\nburst_usec 0\n"
+    },
+    "8103": {
+      "unit": "lab3-inst-8103.service",
+      "pid": 56112,
+      "cgroup": "/system.slice/lab3-inst-8103.service",
+      "quota_percent": 25.0,
+      "cpu.max": "25000 100000\n",
+      "cpu.stat": "usage_usec 13371544\nuser_usec 12934803\nsystem_usec 436741\ncore_sched.force_idle_usec 0\nnr_periods 1284\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n"
+    }
+  }
+}

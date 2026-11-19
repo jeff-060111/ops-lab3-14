@@ -1,0 +1,44 @@
+{
+  "backend-p99-ms": {
+    "query": "1000 * histogram_quantile(0.99, sum by (backend, le) (rate(lb_request_duration_seconds_bucket[30s])))",
+    "start": "1795061365",
+    "end": "1795061605",
+    "step": 5
+  },
+  "site-p99-ms": {
+    "query": "1000 * histogram_quantile(0.99, sum by (le) (rate(lb_request_duration_seconds_bucket[30s])))",
+    "start": "1795061365",
+    "end": "1795061605",
+    "step": 5
+  },
+  "cpu-cores": {
+    "query": "rate(cgroup_cpu_usage_seconds_total{job=\"instances\"}[30s])",
+    "start": "1795061365",
+    "end": "1795061605",
+    "step": 5
+  },
+  "cpu-limit-cores": {
+    "query": "cgroup_cpu_limit_cores{job=\"instances\"}",
+    "start": "1795061365",
+    "end": "1795061605",
+    "step": 5
+  },
+  "backend-up": {
+    "query": "lb_backend_up",
+    "start": "1795061365",
+    "end": "1795061605",
+    "step": 5
+  },
+  "backend-eligible": {
+    "query": "lb_backend_eligible",
+    "start": "1795061365",
+    "end": "1795061605",
+    "step": 5
+  },
+  "backend-inflight": {
+    "query": "lb_inflight_requests",
+    "start": "1795061365",
+    "end": "1795061605",
+    "step": 5
+  }
+}

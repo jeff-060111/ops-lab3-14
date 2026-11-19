@@ -1,0 +1,9 @@
+{"time": "2026-11-19T01:27:13.964+08:00", "action": "load_started", "planned_s": null, "observed_s": 0.0038}
+{"time": "2026-11-19T01:27:58.962+08:00", "action": "cpu_sample_saved", "planned_s": 45, "observed_s": 45.0015}
+{"time": "2026-11-19T01:28:13.961+08:00", "action": "inject_begin", "planned_s": 60, "observed_s": 60.0002, "args": ["kill", "8102"]}
+{"time": "2026-11-19T01:28:14.011+08:00", "action": "inject_complete", "planned_s": 60, "observed_s": 60.0509, "args": ["kill", "8102"]}
+{"time": "2026-11-19T01:29:43.962+08:00", "action": "replacement_ready", "planned_s": 150, "observed_s": 150.0015}
+{"time": "2026-11-19T01:29:53.961+08:00", "action": "inject_begin", "planned_s": 160, "observed_s": 160.0002, "args": ["pause", "8103", "20"]}
+{"time": "2026-11-19T01:30:13.999+08:00", "action": "inject_complete", "planned_s": 160, "observed_s": 180.039, "args": ["pause", "8103", "20"]}
+{"time": "2026-11-19T01:30:14.000+08:00", "action": "resumed", "planned_s": null, "observed_s": 180.0392}
+{"time": "2026-11-19T01:31:15.992+08:00", "action": "finished", "planned_s": null, "observed_s": 242.0312, "summary": "/root/lab3/runs/c1-stop/summary.md"}

@@ -1,0 +1,17 @@
+{"time": "2026-11-19T12:05:16.498+08:00", "mode": "slow", "action": "load_started", "planned_s": null, "observed_s": 0.0052}
+{"time": "2026-11-19T12:06:11.509+08:00", "mode": "slow", "action": "snapshot", "planned_s": null, "observed_s": 55.0162, "label": "before-slow"}
+{"time": "2026-11-19T12:06:16.493+08:00", "mode": "slow", "action": "inject_begin", "planned_s": 60, "observed_s": 60.0002, "action_name": "slow", "quota_percent": 13}
+{"time": "2026-11-19T12:06:16.540+08:00", "mode": "slow", "action": "inject_complete", "planned_s": 60, "observed_s": 60.0463, "action_name": "slow", "quota_percent": 13.0}
+{"time": "2026-11-19T12:07:16.510+08:00", "mode": "slow", "action": "snapshot", "planned_s": null, "observed_s": 120.0163, "label": "during-slow"}
+{"time": "2026-11-19T12:08:16.493+08:00", "mode": "slow", "action": "inject_begin", "planned_s": 180, "observed_s": 180.0001, "action_name": "restore", "quota_percent": 25}
+{"time": "2026-11-19T12:08:16.538+08:00", "mode": "slow", "action": "inject_complete", "planned_s": 180, "observed_s": 180.0448, "action_name": "restore", "quota_percent": 25.0}
+{"time": "2026-11-19T12:08:21.510+08:00", "mode": "slow", "action": "snapshot", "planned_s": null, "observed_s": 185.0172, "label": "after-quota-restore"}
+{"time": "2026-11-19T12:09:18.523+08:00", "mode": "slow", "action": "load_finished", "planned_s": null, "observed_s": 242.0297}
+{"time": "2026-11-19T12:09:18.526+08:00", "mode": "slow", "action": "query_saved", "planned_s": null, "observed_s": 242.0323, "query": "backend-p99-ms"}
+{"time": "2026-11-19T12:09:18.527+08:00", "mode": "slow", "action": "query_saved", "planned_s": null, "observed_s": 242.0342, "query": "site-p99-ms"}
+{"time": "2026-11-19T12:09:18.528+08:00", "mode": "slow", "action": "query_saved", "planned_s": null, "observed_s": 242.035, "query": "cpu-cores"}
+{"time": "2026-11-19T12:09:18.529+08:00", "mode": "slow", "action": "query_saved", "planned_s": null, "observed_s": 242.0358, "query": "cpu-limit-cores"}
+{"time": "2026-11-19T12:09:18.530+08:00", "mode": "slow", "action": "query_saved", "planned_s": null, "observed_s": 242.0364, "query": "backend-up"}
+{"time": "2026-11-19T12:09:18.530+08:00", "mode": "slow", "action": "query_saved", "planned_s": null, "observed_s": 242.0371, "query": "backend-eligible"}
+{"time": "2026-11-19T12:09:18.531+08:00", "mode": "slow", "action": "query_saved", "planned_s": null, "observed_s": 242.0377, "query": "backend-inflight"}
+{"time": "2026-11-19T12:09:18.531+08:00", "mode": "slow", "action": "finished", "planned_s": null, "observed_s": 242.0379, "summary": "/root/lab3/runs/c3-slow/summary.md"}

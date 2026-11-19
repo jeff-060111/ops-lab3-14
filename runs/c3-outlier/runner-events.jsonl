@@ -1,0 +1,17 @@
+{"time": "2026-11-19T12:09:25.592+08:00", "mode": "outlier", "action": "load_started", "planned_s": null, "observed_s": 0.0041}
+{"time": "2026-11-19T12:10:20.604+08:00", "mode": "outlier", "action": "snapshot", "planned_s": null, "observed_s": 55.0161, "label": "before-slow"}
+{"time": "2026-11-19T12:10:25.588+08:00", "mode": "outlier", "action": "inject_begin", "planned_s": 60, "observed_s": 60.0001, "action_name": "slow", "quota_percent": 13}
+{"time": "2026-11-19T12:10:25.633+08:00", "mode": "outlier", "action": "inject_complete", "planned_s": 60, "observed_s": 60.0452, "action_name": "slow", "quota_percent": 13.0}
+{"time": "2026-11-19T12:11:25.605+08:00", "mode": "outlier", "action": "snapshot", "planned_s": null, "observed_s": 120.0165, "label": "during-slow"}
+{"time": "2026-11-19T12:12:25.588+08:00", "mode": "outlier", "action": "inject_begin", "planned_s": 180, "observed_s": 180.0001, "action_name": "restore", "quota_percent": 25}
+{"time": "2026-11-19T12:12:25.633+08:00", "mode": "outlier", "action": "inject_complete", "planned_s": 180, "observed_s": 180.045, "action_name": "restore", "quota_percent": 25.0}
+{"time": "2026-11-19T12:12:30.604+08:00", "mode": "outlier", "action": "snapshot", "planned_s": null, "observed_s": 185.0161, "label": "after-quota-restore"}
+{"time": "2026-11-19T12:13:27.622+08:00", "mode": "outlier", "action": "load_finished", "planned_s": null, "observed_s": 242.0338}
+{"time": "2026-11-19T12:13:27.625+08:00", "mode": "outlier", "action": "query_saved", "planned_s": null, "observed_s": 242.0368, "query": "backend-p99-ms"}
+{"time": "2026-11-19T12:13:27.627+08:00", "mode": "outlier", "action": "query_saved", "planned_s": null, "observed_s": 242.0391, "query": "site-p99-ms"}
+{"time": "2026-11-19T12:13:27.628+08:00", "mode": "outlier", "action": "query_saved", "planned_s": null, "observed_s": 242.0401, "query": "cpu-cores"}
+{"time": "2026-11-19T12:13:27.629+08:00", "mode": "outlier", "action": "query_saved", "planned_s": null, "observed_s": 242.0409, "query": "cpu-limit-cores"}
+{"time": "2026-11-19T12:13:27.630+08:00", "mode": "outlier", "action": "query_saved", "planned_s": null, "observed_s": 242.0418, "query": "backend-up"}
+{"time": "2026-11-19T12:13:27.631+08:00", "mode": "outlier", "action": "query_saved", "planned_s": null, "observed_s": 242.0427, "query": "backend-eligible"}
+{"time": "2026-11-19T12:13:27.632+08:00", "mode": "outlier", "action": "query_saved", "planned_s": null, "observed_s": 242.0435, "query": "backend-inflight"}
+{"time": "2026-11-19T12:13:27.632+08:00", "mode": "outlier", "action": "finished", "planned_s": null, "observed_s": 242.0438, "summary": "/root/lab3/runs/c3-outlier/summary.md"}

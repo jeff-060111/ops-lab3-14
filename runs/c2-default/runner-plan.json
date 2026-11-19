@@ -1,0 +1,189 @@
+{
+  "mode": "default",
+  "command": [
+    "bash",
+    "scripts/run3.sh",
+    "c2-default",
+    "-url",
+    "http://127.0.0.1:8080/api/courses/1",
+    "-plan",
+    "160@120s"
+  ],
+  "dependency": {
+    "scaler": {
+      "mode": "fixed",
+      "replicas": 3,
+      "min": 2,
+      "max": 4,
+      "target": 0.7,
+      "tolerance": 0.1,
+      "signal": "",
+      "sync": "15s",
+      "down_window": "5m0s",
+      "schedule": "",
+      "pull": "20s",
+      "wait_node": false,
+      "node_slots": 2,
+      "node_delay": "4m0s",
+      "quota_percent": 25,
+      "quota_period": "",
+      "memory": "128M",
+      "cpus": "2",
+      "restart": "",
+      "bin": "/root/lab3/bin/enrolld",
+      "args": "-warmup 60s -work 1000000",
+      "env": "",
+      "version": "v1",
+      "base_port": 8101,
+      "data": "/root/lab3/data",
+      "lb": "http://127.0.0.1:8090",
+      "prom": "http://127.0.0.1:9090",
+      "admin": "127.0.0.1:8091",
+      "started": "2026-11-19T10:16:16+08:00"
+    },
+    "ready": {
+      "instances": [
+        {
+          "addr": "127.0.0.1:8101",
+          "version": "v1",
+          "state": "ready",
+          "created": "10:16:22",
+          "restarts": 0
+        },
+        {
+          "addr": "127.0.0.1:8103",
+          "version": "v1",
+          "state": "ready",
+          "created": "10:16:22",
+          "restarts": 0
+        },
+        {
+          "addr": "127.0.0.1:8102",
+          "version": "v1",
+          "state": "ready",
+          "created": "10:21:32",
+          "restarts": 0
+        }
+      ],
+      "backends": [
+        {
+          "addr": "127.0.0.1:8101",
+          "up": true,
+          "draining": false,
+          "ejected": false,
+          "eligible": true,
+          "inflight": 0,
+          "served": 15649
+        },
+        {
+          "addr": "127.0.0.1:8103",
+          "up": true,
+          "draining": false,
+          "ejected": false,
+          "eligible": true,
+          "inflight": 0,
+          "served": 14100
+        },
+        {
+          "addr": "127.0.0.1:8102",
+          "up": true,
+          "draining": false,
+          "ejected": false,
+          "eligible": true,
+          "inflight": 0,
+          "served": 4701
+        }
+      ]
+    },
+    "dependency": "runs/c1-stop",
+    "dependency_sha256": {
+      "meta.txt": "d569451a2afe73154246ceae3e398fcdc23ccdf742c28d00af1658938c3942d8",
+      "steps.csv": "5d0d4b74226eef2c4abe9f5c50d0c7391e7aed2ec9cbc6c255bb5de75699a00e"
+    }
+  },
+  "lbd_config": {
+    "addr": "127.0.0.1:8080",
+    "admin": "127.0.0.1:8090",
+    "policy": "rr",
+    "check_path": "/readyz",
+    "check_interval": "1s",
+    "check_timeout": "500ms",
+    "fall": 3,
+    "rise": 2,
+    "timeout": "2s",
+    "outlier": false,
+    "outlier_window": "10s",
+    "outlier_factor": 3,
+    "outlier_min_ms": 50,
+    "outlier_min_requests": 50,
+    "outlier_error_rate": 0.2,
+    "outlier_max_frac": 0.34,
+    "outlier_eject": "30s",
+    "events": "data/lbd-events.csv",
+    "started": "2026-11-19T10:37:56+08:00"
+  },
+  "initial_state": {
+    "instances": [
+      {
+        "addr": "127.0.0.1:8101",
+        "version": "v1",
+        "state": "ready",
+        "created": "10:16:22",
+        "restarts": 0
+      },
+      {
+        "addr": "127.0.0.1:8103",
+        "version": "v1",
+        "state": "ready",
+        "created": "10:16:22",
+        "restarts": 0
+      },
+      {
+        "addr": "127.0.0.1:8102",
+        "version": "v1",
+        "state": "ready",
+        "created": "10:21:32",
+        "restarts": 0
+      }
+    ],
+    "backends": [
+      {
+        "addr": "127.0.0.1:8101",
+        "up": true,
+        "draining": false,
+        "ejected": false,
+        "eligible": true,
+        "inflight": 0,
+        "served": 0
+      },
+      {
+        "addr": "127.0.0.1:8103",
+        "up": true,
+        "draining": false,
+        "ejected": false,
+        "eligible": true,
+        "inflight": 0,
+        "served": 0
+      },
+      {
+        "addr": "127.0.0.1:8102",
+        "up": true,
+        "draining": false,
+        "ejected": false,
+        "eligible": true,
+        "inflight": 0,
+        "served": 0
+      }
+    ]
+  },
+  "anchor_wall": 1795055883.6468658,
+  "run_start_file": [
+    1067941,
+    1795055883646865987,
+    1795055883646865987,
+    "1795055883"
+  ],
+  "planned_pause_s": 40,
+  "pause_duration_s": 2,
+  "script_sha256": "93b69cb5886b8c62cb202d83124dd909bb20acf5f2efec4ddef3263d897715bf"
+}

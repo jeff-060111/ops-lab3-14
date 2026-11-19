@@ -1,0 +1,25 @@
+unix_ms,time,backend,event,detail
+1795055877455,10:37:57.455,127.0.0.1:8101,added,init=down
+1795055877459,10:37:57.459,127.0.0.1:8103,added,init=down
+1795055877464,10:37:57.464,127.0.0.1:8102,added,init=down
+1795055879456,10:37:59.456,127.0.0.1:8101,up,连续成功 2 次
+1795055879461,10:37:59.461,127.0.0.1:8103,up,连续成功 2 次
+1795055879465,10:37:59.465,127.0.0.1:8102,up,连续成功 2 次
+1795055926956,10:38:46.956,127.0.0.1:8101,down,"连续失败 3 次：Get ""http://127.0.0.1:8101/readyz"": context deadline exceeded (Client.Timeout exceeded while awaiting headers)"
+1795055926961,10:38:46.961,127.0.0.1:8103,down,"连续失败 3 次：Get ""http://127.0.0.1:8103/readyz"": context deadline exceeded (Client.Timeout exceeded while awaiting headers)"
+1795055926965,10:38:46.965,127.0.0.1:8102,down,"连续失败 3 次：Get ""http://127.0.0.1:8102/readyz"": context deadline exceeded (Client.Timeout exceeded while awaiting headers)"
+1795055928456,10:38:48.456,127.0.0.1:8101,up,连续成功 2 次
+1795055928462,10:38:48.462,127.0.0.1:8103,up,连续成功 2 次
+1795055928464,10:38:48.464,127.0.0.1:8102,up,连续成功 2 次
+1795056006455,10:40:06.455,127.0.0.1:8101,added,init=down
+1795056006460,10:40:06.460,127.0.0.1:8103,added,init=down
+1795056006464,10:40:06.464,127.0.0.1:8102,added,init=down
+1795056007456,10:40:07.456,127.0.0.1:8101,up,连续成功 2 次
+1795056007462,10:40:07.462,127.0.0.1:8103,up,连续成功 2 次
+1795056007466,10:40:07.466,127.0.0.1:8102,up,连续成功 2 次
+1795056052157,10:40:52.157,127.0.0.1:8101,down,"连续失败 1 次：Get ""http://127.0.0.1:8101/readyz"": context deadline exceeded (Client.Timeout exceeded while awaiting headers)"
+1795056052162,10:40:52.162,127.0.0.1:8103,down,"连续失败 1 次：Get ""http://127.0.0.1:8103/readyz"": context deadline exceeded (Client.Timeout exceeded while awaiting headers)"
+1795056052166,10:40:52.166,127.0.0.1:8102,down,"连续失败 1 次：Get ""http://127.0.0.1:8102/readyz"": context deadline exceeded (Client.Timeout exceeded while awaiting headers)"
+1795056054456,10:40:54.456,127.0.0.1:8101,up,连续成功 2 次
+1795056054461,10:40:54.461,127.0.0.1:8103,up,连续成功 2 次
+1795056054465,10:40:54.465,127.0.0.1:8102,up,连续成功 2 次
