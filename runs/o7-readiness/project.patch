@@ -1,0 +1,113 @@
+diff --git a/backend/app/core/metrics.py b/backend/app/core/metrics.py
+index 0fc3e22d..716bdc08 100644
+--- a/backend/app/core/metrics.py
++++ b/backend/app/core/metrics.py
+@@ -6,7 +6,7 @@ from prometheus_client import Counter, Gauge, Histogram, REGISTRY
+ from starlette.types import ASGIApp, Message, Receive, Scope, Send
+ 
+ LATENCY_BUCKETS = (.001, .002, .005, .01, .02, .05, .1, .2, .5, 1, 2, 5)
+-EXCLUDED_PATHS = {"/metrics", "/health", "/version", "/docs", "/redoc", "/openapi.json"}
++EXCLUDED_PATHS = {"/metrics", "/health", "/readyz", "/version", "/docs", "/redoc", "/openapi.json"}
+ 
+ 
+ class HttpMetrics:
+diff --git a/backend/app/main.py b/backend/app/main.py
+index 603104ef..be3e9b4c 100644
+--- a/backend/app/main.py
++++ b/backend/app/main.py
+@@ -1,12 +1,17 @@
++import asyncio
+ import json
+ from contextlib import asynccontextmanager
+ from importlib.resources import files
+ 
+-from fastapi import FastAPI, Response
++from asyncpg import PostgresError
++from fastapi import FastAPI, HTTPException, Response
++from sqlalchemy import select
++from sqlalchemy.exc import SQLAlchemyError
+ from fastapi.exceptions import RequestValidationError
+ from fastapi.middleware.cors import CORSMiddleware
+ from starlette.exceptions import HTTPException as StarletteHTTPException
+ 
++from app.api.deps import DbSession
+ from app.api.router import api_router
+ from app.config import settings
+ from app.core.exceptions import (
+@@ -19,6 +24,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+ 
+ from app.core.logging import configure_logging
+ from app.core.metrics import RedMetricsMiddleware
++from app.models.paper import Paper
+ from app.schemas.common import success
+ 
+ 
+@@ -48,6 +54,16 @@ async def health_check() -> dict:
+     return success({"status": "ok", "environment": settings.environment})
+ 
+ 
++@app.get("/readyz", tags=["system"], responses={503: {"description": "Paper store unavailable"}})
++async def readiness(db: DbSession) -> dict:
++    try:
++        async with asyncio.timeout(2):
++            await db.execute(select(Paper.id).limit(0))
++    except (TimeoutError, OSError, SQLAlchemyError, PostgresError):
++        raise HTTPException(503, "Paper store unavailable") from None
++    return success({"status": "ready"})
++
++
+ @app.get("/version", tags=["system"])
+ async def version_info() -> dict:
+     content = files("app").joinpath("build_info.json").read_text(encoding="utf-8")
+diff --git a/backend/docker-compose.yml b/backend/docker-compose.yml
+index 7c233cbf..a2934b02 100644
+--- a/backend/docker-compose.yml
++++ b/backend/docker-compose.yml
+@@ -52,6 +52,11 @@ services:
+         condition: service_healthy
+       migrate:
+         condition: service_completed_successfully
++    healthcheck:
++      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8080/readyz', timeout=3).close()"]
++      interval: 10s
++      timeout: 4s
++      retries: 3
+     command: uvicorn app.main:app --host 0.0.0.0 --port 8080
+ 
+   migrate:
+diff --git a/backend/tests/test_health.py b/backend/tests/test_health.py
+index 08b9f09b..3e068ca6 100644
+--- a/backend/tests/test_health.py
++++ b/backend/tests/test_health.py
+@@ -1,4 +1,10 @@
++from unittest.mock import AsyncMock
++
++import pytest
+ from fastapi.testclient import TestClient
++from sqlalchemy.exc import SQLAlchemyError
++
++from app.database import get_db_session
+ 
+ from app.main import app
+ 
+@@ -9,3 +15,20 @@ def test_health_check() -> None:
+ 
+     assert response.status_code == 200
+     assert response.json()["data"]["status"] == "ok"
++
++
++@pytest.mark.parametrize("failure", [None, OSError(), TimeoutError(), SQLAlchemyError()])
++def test_readiness_tracks_paper_store(monkeypatch, failure) -> None:
++    db = AsyncMock()
++    db.execute.side_effect = failure
++    monkeypatch.setitem(app.dependency_overrides, get_db_session, lambda: db)
++    with TestClient(app) as client:
++        response = client.get("/readyz")
++        assert client.get("/health").status_code == 200
++
++    db.execute.assert_awaited_once()
++    if failure is None:
++        assert response.status_code == 200
++        assert response.json()["data"]["status"] == "ready"
++    else:
++        assert response.status_code == 503

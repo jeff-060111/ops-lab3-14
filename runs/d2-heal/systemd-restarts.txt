@@ -1,0 +1,6 @@
+NRestarts=4
+Id=lab3-inst-8101.service
+NRestarts=4
+Id=lab3-inst-8102.service
+NRestarts=4
+Id=lab3-inst-8103.service

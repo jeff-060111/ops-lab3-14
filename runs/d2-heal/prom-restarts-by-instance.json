@@ -1,0 +1,103 @@
+[
+  {
+    "query": "changes(process_start_time_seconds{job=\"instances\"}[10m])",
+    "time": 1795087989.959,
+    "response": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": [
+          {
+            "metric": {
+              "group": "lab3",
+              "instance": "127.0.0.1:8101",
+              "job": "instances"
+            },
+            "value": [
+              1795087989.959,
+              "5"
+            ]
+          },
+          {
+            "metric": {
+              "group": "lab3",
+              "instance": "127.0.0.1:8103",
+              "job": "instances"
+            },
+            "value": [
+              1795087989.959,
+              "4"
+            ]
+          },
+          {
+            "metric": {
+              "group": "lab3",
+              "instance": "127.0.0.1:8102",
+              "job": "instances"
+            },
+            "value": [
+              1795087989.959,
+              "5"
+            ]
+          },
+          {
+            "metric": {
+              "group": "lab3",
+              "instance": "127.0.0.1:8104",
+              "job": "instances"
+            },
+            "value": [
+              1795087989.959,
+              "0"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "query": "changes(process_start_time_seconds{job=\"instances\"}[8m])",
+    "time": 1795087989.959,
+    "response": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": [
+          {
+            "metric": {
+              "group": "lab3",
+              "instance": "127.0.0.1:8101",
+              "job": "instances"
+            },
+            "value": [
+              1795087989.959,
+              "4"
+            ]
+          },
+          {
+            "metric": {
+              "group": "lab3",
+              "instance": "127.0.0.1:8103",
+              "job": "instances"
+            },
+            "value": [
+              1795087989.959,
+              "4"
+            ]
+          },
+          {
+            "metric": {
+              "group": "lab3",
+              "instance": "127.0.0.1:8102",
+              "job": "instances"
+            },
+            "value": [
+              1795087989.959,
+              "4"
+            ]
+          }
+        ]
+      }
+    }
+  }
+]
