@@ -1,0 +1,44 @@
+{
+  "checked_at": "2026-11-19T14:33:14+08:00",
+  "status": "PORT_PRECHECK_FIX_VALIDATED_C1_COMPLETE_C3_NOT_STARTED",
+  "script_sha256": "962333df2827fa6ecdf5cff820cac697c5c60a8540718d2b01b9ea00c3018401",
+  "previous_script_sha256": "24b8f6da59ead0bc1a0f3cdbe7c55c805252be6b916c4f2293c645f078cf5eca",
+  "config_sha256": "ab712e585c91abbf949daf055a5290c6cbd77b834974cd533e7a96487c83071f",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "data/o5-preparation/test_o5_preparation.py"
+      ],
+      "exit_code": 0,
+      "output": "test_actual_formal_baseline_and_calibration (__main__.PreparationTests.test_actual_formal_baseline_and_calibration) ... ok\ntest_no_overwrite_and_name_traversal (__main__.PreparationTests.test_no_overwrite_and_name_traversal) ... ok\ntest_polling_transition_keeps_interval_and_transitional_semantics (__main__.PreparationTests.test_polling_transition_keeps_interval_and_transitional_semantics) ... ok\ntest_port_precheck_accepts_time_wait_and_rejects_listener (__main__.PreparationTests.test_port_precheck_accepts_time_wait_and_rejects_listener) ... ok\ntest_sampling_detection_does_not_claim_internal_exact_timestamp (__main__.PreparationTests.test_sampling_detection_does_not_claim_internal_exact_timestamp) ... ok\ntest_stats_rejects_missing_or_duplicate_backends (__main__.PreparationTests.test_stats_rejects_missing_or_duplicate_backends) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.015s\n\nOK\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/run-o5.py",
+        "--check",
+        "--scenario",
+        "c3"
+      ],
+      "exit_code": 0,
+      "output": "检查通过：HAProxy 配置有效；三台 ready；实际配额25%、CPU2、128M；88个C正式文件一致。\n正式输出：runs/o5-c3\nC3 标定：{\"source\": \"runs/c1-stop/cpu-before.json\", \"sha256\": \"ac810a048fbc7e1dc8c90db28355bba33b5305da95291ac1e4eb608b1805d5f1\", \"usage_cores\": \"0.1105564\", \"slow_quota_percent\": 13, \"formula\": \"U / 0.85 * 100, nearest integer percent\", \"normal_quota_percent\": 25}\n只读检查结束，未启动 HAProxy/压测/故障注入。\n"
+    },
+    {
+      "command": [
+        "haproxy",
+        "-c",
+        "-f",
+        "deploy/haproxy-o5.cfg"
+      ],
+      "exit_code": 0,
+      "output": "Configuration file is valid\n"
+    }
+  ],
+  "fixture_tests": 6,
+  "fix_scope": "Only pre-start listener check changed: inspect TCP LISTEN instead of exclusive no-reuse bind.",
+  "regression_test": "Isolated random loopback port; confirms active listener rejection and TIME_WAIT acceptance.",
+  "c1_files_unchanged": 35,
+  "c3_started": false,
+  "formal_run_to_continue": "python3 scripts/run-o5.py --scenario c3"
+}

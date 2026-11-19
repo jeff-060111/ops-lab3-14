@@ -1,0 +1,6 @@
+unix_ms,time,backend,event,detail
+1795069546371,14:25:46.371,127.0.0.1:8102,removed,inflight=0
+1795069567384,14:26:07.384,127.0.0.1:8102,added,init=down
+1795069629387,14:27:09.387,127.0.0.1:8102,up,连续成功 2 次
+1795069648872,14:27:28.872,127.0.0.1:8103,down,"连续失败 3 次：Get ""http://127.0.0.1:8103/readyz"": context deadline exceeded (Client.Timeout exceeded while awaiting headers)"
+1795069668374,14:27:48.374,127.0.0.1:8103,up,连续成功 2 次

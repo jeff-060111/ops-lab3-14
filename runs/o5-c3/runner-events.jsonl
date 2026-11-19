@@ -1,0 +1,12 @@
+{"time": "2026-11-19T14:35:50.474+08:00", "action": "snapshot", "planned_s": null, "observed_s": null, "label": "before-load"}
+{"time": "2026-11-19T14:35:50.475+08:00", "action": "load_started", "planned_s": null, "observed_s": 0.001, "command": ["taskset", "-c", "0-1", "bin/loadgen", "-url", "http://127.0.0.1:18081/api/courses/1", "-plan", "160@240s", "-slo", "0.2s", "-stop-below", "0", "-out", "/root/lab3/runs/o5-c3/steps.csv", "-timeline", "/root/lab3/runs/o5-c3/timeline.csv"]}
+{"time": "2026-11-19T14:36:45.492+08:00", "action": "snapshot", "planned_s": null, "observed_s": 55.0178, "label": "before-fault"}
+{"time": "2026-11-19T14:36:50.474+08:00", "action": "inject_begin", "planned_s": 60, "observed_s": 60.0001, "args": ["slow", 8102, 13]}
+{"time": "2026-11-19T14:36:50.525+08:00", "action": "inject_complete", "planned_s": 60, "observed_s": 60.0509, "args": ["slow", 8102, 13]}
+{"time": "2026-11-19T14:37:50.492+08:00", "action": "snapshot", "planned_s": null, "observed_s": 120.0176, "label": "during-slow"}
+{"time": "2026-11-19T14:38:50.474+08:00", "action": "inject_begin", "planned_s": 180, "observed_s": 180.0001, "args": ["restore", 8102, 25]}
+{"time": "2026-11-19T14:38:50.525+08:00", "action": "inject_complete", "planned_s": 180, "observed_s": 180.0509, "args": ["restore", 8102, 25]}
+{"time": "2026-11-19T14:38:55.493+08:00", "action": "snapshot", "planned_s": null, "observed_s": 185.0191, "label": "after-quota-restore"}
+{"time": "2026-11-19T14:39:50.544+08:00", "action": "load_finished", "planned_s": null, "observed_s": 240.0701}
+{"time": "2026-11-19T14:39:52.572+08:00", "action": "snapshot", "planned_s": null, "observed_s": 242.098, "label": "after-load"}
+{"time": "2026-11-19T14:39:54.260+08:00", "action": "finished", "planned_s": null, "observed_s": 243.7861, "directory": "/root/lab3/runs/o5-c3"}

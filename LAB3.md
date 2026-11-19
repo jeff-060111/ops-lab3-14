@@ -439,7 +439,7 @@ C3降至13%后，8102发生节流和业务尾延迟升高，但主动健康状�
 | O2 两层伸缩          | 已完成无等节点与等节点两轮对照；预测、实测和结论见第 9 节                                                                |
 | O3 扩错层            | 已完成测前预测、标定、1500 与 1400 req/s 各三组同曲线对照，并补测 1400 req/s 的 QPS 反应式方案；结果与适用范围见第 10 节 |
 | O4 Kubernetes 的 HPA | <未做 / 环境、配置文件、数据与结论>                                                                                      |
-| O5 换负载均衡器      | <未做 / 配置文件、`runs/` 目录、结论>                                                                                  |
+| O5 换负载均衡器      | 已完成HAProxy替换业务路径、C1/C3正式对照；预测、配置、检出与日志限制见第12节及 TASK_O5_EVIDENCE.md |
 | O6 两台主机          | <未做 / 拓扑、`runs/` 目录、结论>                                                                                      |
 | O7 迁移到小组项目    | <未做 / 仓库链接、做了什么、结论>                                                                                        |
 
@@ -693,3 +693,92 @@ python3 scripts/summarize-o1.py runs/o1-limit170-new > runs/o1-limit170-new/gc-s
 ```
 
 包装脚本调用原有 `scripts/run.sh` 生成标准原始数据；没有修改 `steps.csv`、`red.csv`、`use.csv` 等原始结果。校验清单见 `runs/o1-data.sha256`，派生 GC 表可用上述脚本重建。两轮结束后均已停止实例、清除失败状态，证据见各自 `cleanup.txt`；保留监控、二进制与实验数据供现场复现。
+
+## 12. 选做 O5：换负载均衡器
+
+**状态：已完成。** 用 HAProxy 接管业务路径，配置主动 HTTP 健康检查，重做 C1 和 C3。两轮正式数据分别为 [`runs/o5-c1/`](runs/o5-c1/)、[`runs/o5-c3/`](runs/o5-c3/)，证据导航见 [TASK_O5_EVIDENCE.md](TASK_O5_EVIDENCE.md)，审计结果见 [O5_EVIDENCE_AUDIT.json](O5_EVIDENCE_AUDIT.json)。本节仅引用正式数据；原任务 C 的88个原始文件保持不变。
+
+### 12.1 测前预测、环境和比较范围
+
+准备记录时间为2026-11-19 14:12:43 +08:00，测前预测原文保存在 [`runs/o5-prediction-before.md`](runs/o5-prediction-before.md)，两轮目录各有 `prediction-before.md` 快照与 `runner-plan.json` 校验值。正式负载分别在14:24:45和14:35:50开始。原预测保留，以下实测单独分析。
+
+预测要点：kill 后 scaler 仍会补建，但 HAProxy 不接收 scaler 删除通知，须自行累积失败，预计约2–5s DOWN；pause 时进程还在，预计同样由探测超时后约2–5s DOWN，恢复还需连续成功检查。C3 预计降配会增加业务尾延迟，而轻量 `/readyz` 可能仍及时返回200；不预设必须违反200ms SLO，也不预期本次只开主动检查的 HAProxy 自动复现 lbd 的业务 p99 离群摘除。
+
+HAProxy 版本为 **2.8.30-0ubuntu0.24.04.2**，完整构建信息见 [`deploy/o5-haproxy-version.txt`](deploy/o5-haproxy-version.txt)，实际配置见 [`deploy/haproxy-o5.cfg`](deploy/haproxy-o5.cfg)。HAProxy 和压测/采集使用CPU 0–1；三台应用实例使用CPU 2、CPUQuota=25%、MemoryMax=128M，`-warmup 60s -work 1000000`、模拟拉镜像20s。两轮负载均为GET `/api/courses/1`、Poisson、160请求/秒、240s、客户端超时2s，成功请求200ms为SLO阈值，未发生 dropped。
+
+业务路径为 **loadgen → HAProxy 127.0.0.1:18081 → enrolld 8101/8102/8103**。现有lbd的8080/8090仅保留给scaler登记实例、跟踪就绪；O5业务请求不经过lbd。scaler继续检查systemd状态并补建进程，HAProxy静态配置三个端口并独立检查，不接收scaler的删除/登记通知。因此O5替换了业务负载均衡器，同时保留原有实例管理，控制集成差异是比较条件。
+
+### 12.2 配置方式与语义
+
+| 功能 | 教学 lbd | 本次 HAProxy 配置 |
+|---|---|---|
+| 业务入口、后端 | 8080；scaler通过8090管理接口增删后端 | frontend监听18081；backend静态列出8101–8103 |
+| 分流 | `-policy rr`（默认） | `balance roundrobin` |
+| 主动检查 | `/readyz`；间隔1s、超时500ms、fall=3、rise=2 | `http-check send meth GET uri /readyz`，`expect status 200`；inter/fastinter/downinter均1s，fall=3、rise=2 |
+| 检查超时 | HTTP探测请求的500ms限制 | `timeout connect 500ms`与连接后的`timeout check 500ms`分别限制，不能当作相同的整体500ms |
+| 业务超时与重试 | 代理超时2s；实现见`cmd/lbd/` | server/client无活动超时各2s；`retries 0`、`retry-on none`，显式禁用重试 |
+| 初始状态 | 后端可由scaler登记为down，等待检查通过 | HAProxy 2.8默认初始UP；包装脚本等待真实L7OK并稳定UP两秒后才加压 |
+| 业务指标离群摘除 | C3-outlier启用`-outlier`；窗口10s、样本门槛50，延迟绝对门槛50ms及相对其他实例3倍等规则 | 本配置只开主动就绪检查，没有配置按业务p99的离群摘除，也未开启按错误的被动摘除 |
+| 观测 | `lbd-events.csv`、管理接口、按backend的RED指标 | Runtime API `show stat`、原生健康日志、按请求服务器记录的业务日志 |
+
+参数取相近值不保证检查调度、连接复用和超时语义一致。HAProxy规则依据[2.8配置手册](https://docs.haproxy.org/2.8/configuration.html)与[健康检查说明](https://www.haproxy.com/documentation/haproxy-configuration-tutorials/reliability/health-checks/)；本次以保存的配置和真实事件解释结果，不把不同检测能力当成同一算法对照。
+
+### 12.3 C1：停止与卡住
+
+| 配置 | 发出 | 客户端错误 | 错误率 | 成功请求p99 ms | 超过200ms的成功请求 | 逐秒缺口 |
+|---|---:|---:|---:|---:|---:|---:|
+| 正式C1 lbd | 38626 | 170 | 0.44% | 13.13 | 0 | 4s |
+| O5 HAProxy | 38626 | 328 | 0.85% | 13.05 | 0 | 7s |
+
+HAProxy客户端错误包括503×137、504×24、超时167，合计328。错误集中于秒桶[60,63)的137个和[160,164)的191个；这里是按请求计划发送秒聚合的故障附近统计，不是亚秒检测区间内的精确计数。HAProxy原生业务日志则记录200×38298、503×137、504×191；其中部分504在客户端2s截止前未收到，表现为客户端超时，所以两侧错误分类不同而总量吻合。证据为两侧 `steps.csv`、`timeline.csv` 和 O5 的 `haproxy-requests.csv`。
+
+HAProxy状态以目标200ms间隔采样，实际最大观测间隔201ms。检出上界取本次采样响应完成时刻，下界保守取前次采样请求开始时刻；它不是内部事件精确时刻。原生检查日志作为独立旁证，journal时间是接收日志时刻。
+
+| 故障 | lbd正式C1首个判定 | HAProxy DOWN的保守延迟区间 | HAProxy首次UP观测（从注入算） | HAProxy检查原因 |
+|---|---|---|---:|---|
+| kill 8102 | scaler通知`removed`，0.363s | 2.425–2.625s | 83.867s | L4CON，连接失败 |
+| pause 8103二十秒 | 主动检查`down`，2.889s | 3.476–3.677s | 22.486s | L7TOUT，检查耗时501ms |
+
+实际pause与resume相隔20.010s，因此HAProxy在resume后约2.476s首次观测UP。scaler记录替补8102从创建到ready为84.0s，原进程被kill后HAProxy观测UP用83.867s；创建时刻与kill时刻、scaler/lbd的ready与HAProxy的UP具有不同起点和检查相位，两项数值并不矛盾。实际注入、状态转换、生命周期分别见 [`o5-c1/marks.csv`](runs/o5-c1/marks.csv)、[`haproxy-events.csv`](runs/o5-c1/haproxy-events.csv)、[`haproxy-health-native.jsonl`](runs/o5-c1/haproxy-health-native.jsonl)、[`instances.csv`](runs/o5-c1/instances.csv)。
+
+检出约2–5s和恢复需连续成功检查的预测与本次相符。kill的差异首先来自集成路径：原lbd直接收到scaler删除通知，HAProxy须等自身检查，不能据0.363s与2.625s证明两者主动健康检查谁更好。pause更接近同类机制对照，本次HAProxy观测稍晚、错误更多，但单次运行受探测相位和调度影响，不能推出普遍性能排序。成功请求p99很低也不能掩盖故障：错误和超时不属于成功请求分位数，须结合错误率与缺口评价。
+
+### 12.4 C3：降配后的业务变慢与健康检查
+
+标定只用正式C1的 [`cpu-before.json`](runs/c1-stop/cpu-before.json)：8102用量U=**0.1105564核**，`U/0.85×100=13.006635…%`，取整数 **13%**。在实际60.481s降配，180.482s恢复，间隔120.001s。55s、120s、185s及结束快照的同一MainPID=114188，`cpu.max`依次为25000/100000、13000/100000、25000/100000、25000/100000；未发生进程重启。55s至120s累计`nr_throttled`从5升到196，证明限流真实发生；这65秒还含5秒正常配额，不将限流周期比例误作CPU利用率。
+
+| 配置 | 发出/成功 | 客户端成功请求p99 ms | 最大成功耗时ms | 错误 | 超过200ms的成功请求 | 缺口 | 慢实例状态 |
+|---|---:|---:|---:|---:|---:|---:|---|
+| 正式C3 lbd普通检查 | 38626/38626 | 24.70 | 155.00 | 0 | 0 | 0s | 未down、未摘除 |
+| 正式C3 lbd离群摘除 | 38626/38626 | 13.77 | 89.42 | 0 | 0 | 0s | 三次ejected |
+| O5 HAProxy普通检查 | 38626/38626 | 26.63 | 166.81 | 0 | 0 | 0s | 未观测到DOWN |
+
+证据为 [`runs/c3-slow/steps.csv`](runs/c3-slow/steps.csv)、[`runs/c3-outlier/steps.csv`](runs/c3-outlier/steps.csv) 与 [`runs/o5-c3/steps.csv`](runs/o5-c3/steps.csv)。本次HAProxy对每台取得1210条状态采样，全部UP；实际最大采样间隔202ms。前后原生`chkfail/chkdown`均为0，未记录健康状态变化。8102一直接流量，结束累计请求12875，另两台12876、12875，仍符合轮询。资源快照和状态证据见 [`during-slow.json`](runs/o5-c3/during-slow.json)、[`haproxy-stats.csv`](runs/o5-c3/haproxy-stats.csv)、[`haproxy-stats-end.csv`](runs/o5-c3/haproxy-stats-end.csv)。
+
+业务日志中成功响应的服务端响应头耗时`%Tr`，8102全轮p99为49ms，另两台均12ms，支持慢实例的业务处理与轻量就绪检查出现分离。该值依据已保存的每请求样本计算，不是stats的平均rtime，也不是客户端耗时。`%Tr`、lbd直方图与客户端p99口径不同，跨实现对比统一用loadgen结果。
+
+**日志覆盖限制：** 客户端和HAProxy原生请求/2xx计数均为38626，保存的原生日志与解析CSV为 **38624** 条，少2条，已在 [O5_EVIDENCE_AUDIT.json](O5_EVIDENCE_AUDIT.json)中记录；扩大journal时间范围后仍为38624，原因未确定，不补造缺失记录。按后端的日志分位数仅描述现有样本，不能宣称逐请求日志全量完整。完整的客户端结果、HAProxy计数、配额与PID快照、检查计数和状态采样仍共同支持主要结论。
+
+本次符合“业务变慢而主动就绪检查仍通过”的预测。普通HAProxy配置与普通lbd的全轮客户端p99处于同一数量级；与lbd离群组的区别体现了策略能力：只检测`/readyz`的健康检查可能看不到真实业务尾延迟，业务指标摘除能够补充这一盲区。本次HAProxy没有启用相同离群算法，不能把结果解释为HAProxy整体能力差，也不能声称它无法通过其他配置或扩展实现业务性能检测。三组均满足200ms阈值，不能写成“SLO被离群摘除修复”。
+
+### 12.5 可复现性、异常与成立条件
+
+两轮HAProxy实际配置及测前预测字节完全相同。C1完成后，旧包装脚本在组间启动前用不带地址复用的临时bind探测空闲，TIME_WAIT使其误报`Address already in use`；C3当时尚未开始。修复只将启动前检查改成查询实际TCP LISTEN，业务配置、负载和注入均未改变；AST审计验证其余程序保持一致。原脚本和说明保存在 [`runs/o5-c1-runner-before-port-fix.py`](runs/o5-c1-runner-before-port-fix.py)、[`runs/o5-port-fix-note.md`](runs/o5-port-fix-note.md)。C1原35个文件未改，随后单独运行C3得到当前正式数据。
+
+两轮各运行一次；正式任务C基线在同日较早时间测量，未安排紧邻的多次随机交叉对照。单机仍共享内核、缓存、内存和其他主机负载，额外HAProxy探测和日志也有开销；相近参数的调度、超时和连接复用语义不同。结论限于本组配置、应用和负载，重点是故障路径与检测信号，不外推为普遍吞吐/延迟排名。
+
+只读核验已保存的数据，不需要scaler继续运行：
+
+```bash
+python3 scripts/audit-o5.py
+python3 scripts/audit-c.py
+```
+
+重新实验前恢复原lbd/scaler并等待三台ready、配额25%，使用新的目录前缀：
+
+```bash
+python3 scripts/run-o5.py --check --prefix o5-repeat-01
+python3 scripts/run-o5.py --prefix o5-repeat-01
+```
+
+将生成 `runs/o5-repeat-01-c1/`、`runs/o5-repeat-01-c3/`，已有目录拒绝覆盖。操作顺序与人工注入说明见 [O5手动实验操作手册](docs/O5_手动实验操作手册.md)。手动练习使用独立名称，不替换本节正式证据。

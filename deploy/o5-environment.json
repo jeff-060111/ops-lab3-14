@@ -1,0 +1,27 @@
+{
+  "prepared_at": "2026-11-19T14:12:43+08:00",
+  "status": "PREPARATION_ONLY_NO_O5_EXPERIMENT_RUN",
+  "base_commit": "b42e8641d4572e73a36b7e4b657a7362f40d1203",
+  "haproxy_version": "HAProxy version 2.8.30-0ubuntu0.24.04.2 2026/10/27 - https://haproxy.org/",
+  "haproxy_binary": "/usr/sbin/haproxy",
+  "haproxy_binary_sha256": "c95bbeef9fd6d4fe5f5ae927c347dbbd9c72dcdef894bb9f9196542c1801454b",
+  "config_sha256": "ab712e585c91abbf949daf055a5290c6cbd77b834974cd533e7a96487c83071f",
+  "systemd": "systemd 255 (255.4-1ubuntu8.16)",
+  "package": "haproxy 2.8.30-0ubuntu0.24.04.2 amd64",
+  "business_entry": "127.0.0.1:18081",
+  "default_distribution_service": "disabled and inactive",
+  "install_log": "data/o5-preparation/install.log",
+  "original_control_lbd": "127.0.0.1:8080, admin 127.0.0.1:8090; no O5 loadgen requests",
+  "baseline_dirs": [
+    "runs/c1-stop",
+    "runs/c3-slow",
+    "runs/c3-outlier"
+  ],
+  "lab_binary_sha256": {
+    "bin/enrolld": "9de7e591bda1fa2b6af2040c785cc28d7cd34d50538c5ebb471ba2f6a0a3b4cb",
+    "bin/lbd": "6bf6b8f6c1ea31247b143ddb0e8b0e6a5278808b7bb6957c4f05dc8832891ff6",
+    "bin/scaler": "bbf49fbece431cb5a0c46361d8a0542e019be9d237ecb16c12d6230ff9286545",
+    "bin/loadgen": "63d9120e30c4d63b8abb2ffb3e3ff676ff3a5fe00517443f43f02bb81bf0be33",
+    "bin/lab3sum": "bc209ea62ccf7a102a70198cfa40bd25f0068f3d7f5c710660bc61d0875ce9be"
+  }
+}

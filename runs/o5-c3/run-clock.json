@@ -1,0 +1,5 @@
+{
+  "launch_wall_unix": 1795070150.4745152,
+  "launch_monotonic": 2506050.985485941,
+  "note": "Injection schedule uses monotonic launch time; loadgen CSV start_unix has second resolution."
+}

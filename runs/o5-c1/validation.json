@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "scenario": "c1",
+  "formal_c_files_unchanged": 88,
+  "timeline_seconds": 240,
+  "marks": [
+    [
+      "kill",
+      "127.0.0.1:8102"
+    ],
+    [
+      "pause",
+      "127.0.0.1:8103"
+    ],
+    [
+      "resume",
+      "127.0.0.1:8103"
+    ]
+  ],
+  "client_sent": 38626,
+  "client_ok": 38298,
+  "journal_request_count": 38626,
+  "note": "HAProxy logs may include responses after a client timeout; counts need not equal client success count."
+}

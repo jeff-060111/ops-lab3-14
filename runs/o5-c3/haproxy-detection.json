@@ -1,0 +1,13 @@
+{
+  "measurement": "Conservative polling interval: after the previous polling request began and no later than the current response completed.",
+  "injections": [
+    {
+      "action": "slow",
+      "target": "127.0.0.1:8102",
+      "mark_unix_ms": 1795070210481,
+      "mark_relative_s": 60.481,
+      "observed_down": null,
+      "observed_up": null
+    }
+  ]
+}

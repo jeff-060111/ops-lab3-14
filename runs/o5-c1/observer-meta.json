@@ -1,0 +1,6 @@
+{
+  "requested_interval_ms": 200.0,
+  "max_observed_gap_ms": 201,
+  "polls": 1210,
+  "note": "Transitions are observed by polling, not exact internal HAProxy event timestamps."
+}

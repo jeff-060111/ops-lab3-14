@@ -1,0 +1,26 @@
+{
+  "measurement": "HAProxy %Tr, server response header time in ms; successful logged responses only",
+  "not_same_as": "lbd end-to-end histogram or loadgen client latency; not CPU utilization",
+  "journal_request_count": 38624,
+  "native_health_log_count": 0,
+  "backends": {
+    "inst8101": {
+      "samples": 12876,
+      "p50_ms": 4,
+      "p99_ms": 12,
+      "max_ms": 27
+    },
+    "inst8102": {
+      "samples": 12875,
+      "p50_ms": 4,
+      "p99_ms": 49,
+      "max_ms": 166
+    },
+    "inst8103": {
+      "samples": 12873,
+      "p50_ms": 4,
+      "p99_ms": 12,
+      "max_ms": 20
+    }
+  }
+}
